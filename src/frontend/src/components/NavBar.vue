@@ -4,7 +4,7 @@
             <li><router-link class="router" to="/">Home</router-link></li>
             <li><router-link class="router" to="/about">Menu</router-link></li>
             <li><router-link class="router" to="/">Contact</router-link></li>
-            <li><router-link class="router" to="/">Sign in</router-link></li>
+            <li><router-link class="router" to="/signin">Sign in</router-link></li>
         </ul>
     </div>
 </template>
