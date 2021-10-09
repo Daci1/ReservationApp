@@ -1,8 +1,8 @@
 package com.reservationapp.presentation.controller;
 
-import java.util.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -10,16 +10,22 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.reservationapp.business.implementation.UserDetailsServiceImpl;
 import com.reservationapp.business.service.ReservationService;
 import com.reservationapp.business.service.UserService;
+import com.reservationapp.model.AuthenticationRequest;
 import com.reservationapp.persistance.entity.Reservation;
 import com.reservationapp.persistance.entity.User;
+import com.reservationapp.security.util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/user")
@@ -29,6 +35,12 @@ public class UserController {
 	private UserService userService;
 	@Autowired
 	private ReservationService reservationService;
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	@Autowired
+	private UserDetailsServiceImpl userDetailsService;
+	@Autowired
+	private JwtUtil jwtTokenUtil;
 	
 	@GetMapping("/getall")
 	public ResponseEntity<Set<Reservation>> getAllUsers(){
@@ -113,6 +125,20 @@ public class UserController {
 				}
 			}
 		}catch(Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping("/authenticate")
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest){
+		try {
+			authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+			final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+			final String jwt = jwtTokenUtil.generateToken(userDetails);
+			return ResponseEntity.ok(jwt);
+		}catch(Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
