@@ -1,7 +1,5 @@
 package com.reservationapp.security.config;
 
-import javax.servlet.Filter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,14 +7,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.reservationapp.business.implementation.UserDetailsServiceImpl;
-import com.reservationapp.security.filter.JwtRequestFilter;
+//import com.reservationapp.security.filter.JwtRequestFilter;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
@@ -24,7 +19,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	@Autowired
 	private UserDetailsServiceImpl myUserDetailsService;
 //	@Autowired
-//	private JwtRequestFilter jwtRequestFilter;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -42,10 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 			.antMatchers("/*").permitAll()
 			.antMatchers("/api/user/authenticate").permitAll()
 			.antMatchers("/api/user/getall").permitAll()
-			.antMatchers("/api/user/**").hasRole("ADMIN")
-			.and().sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.addFilterBefore(new JwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+			.antMatchers("/api/user/**").hasRole("ADMIN");
 	}
 	
 	@Override
