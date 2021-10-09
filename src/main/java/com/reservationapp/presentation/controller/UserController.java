@@ -142,4 +142,9 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@PostMapping("/ceva")
+	public String ceva(@RequestBody String nume) {
+		return "Hello " + nume;
+	}
 }
