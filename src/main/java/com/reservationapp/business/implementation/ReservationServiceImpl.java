@@ -1,6 +1,8 @@
 package com.reservationapp.business.implementation;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +33,10 @@ public class ReservationServiceImpl implements ReservationService{
 	@Override
 	public void save(Reservation reservation) {
 		reservationRepo.save(reservation);
+	}
+
+	@Override
+	public Optional<Reservation> findReservation(String tableName, Timestamp reservationBegin) {
+		return reservationRepo.findByTableNameAndReservationBegin(tableName, reservationBegin);
 	}
 }

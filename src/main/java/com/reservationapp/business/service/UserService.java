@@ -14,5 +14,6 @@ public interface UserService {
 	public void addReservation(User user, Reservation reservation);
 	public Optional<User> findByFirstName(String firstName);
 	public void save(User user);
+	public Optional<User> findByEmail(String email);
 	
 }

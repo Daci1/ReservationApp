@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,6 +19,12 @@ import com.sun.istack.NotNull;
 @Entity
 public class User {
 
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", password=" + password + ", role=" + role + ", dob=" + dob +	 "]";
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Integer id;
@@ -26,9 +33,12 @@ public class User {
 	@NotNull
 	private String lastName;
 	@NotNull
+	@Column(unique=true)
 	private String email;
 	@NotNull
 	private String password;
+	@NotNull
+	private String role;
 	private Timestamp dob;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Reservation> reservations = new HashSet<>();
@@ -100,6 +110,14 @@ public class User {
 	
 	public void deleteReservation(final Reservation reservation) {
 		this.reservations.remove(reservation);
+	}
+	
+	public String getRole() {
+		return this.role;
+	}
+	
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }
