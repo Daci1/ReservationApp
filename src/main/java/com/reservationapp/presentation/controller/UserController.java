@@ -16,12 +16,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reservationapp.business.implementation.UserDetailsServiceImpl;
 import com.reservationapp.business.service.ReservationService;
 import com.reservationapp.business.service.UserService;
+import com.reservationapp.business.service.exception.CorruptedRequestException;
 import com.reservationapp.model.AuthenticationRequest;
 import com.reservationapp.persistance.entity.Reservation;
 import com.reservationapp.persistance.entity.User;
@@ -48,7 +50,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/addreservation")
-	public ResponseEntity<Void> addReservationToUser(@RequestBody Map<String, String> Json){
+	public ResponseEntity<?> addReservationToUser(@RequestBody Map<String, String> Json, @RequestHeader String Authorization){
 		//TODO: add logic+verifications for adding the reservation
 		try {
 			String email;
@@ -70,9 +72,11 @@ public class UserController {
 			if(user.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}else {
+				userService.validateRequestSender(user.get(), Authorization);
 				if(reservationService.findReservation(tableNumber, reservationBegin).isPresent()){
 					return new ResponseEntity<>(HttpStatus.CONFLICT);
 				}else {
+					//TODO: move the logic in the service layer
 					Reservation reservation = new Reservation(tableNumber, reservationBegin);
 					reservationService.save(reservation);
 					user.get().addReservation(reservation);
@@ -81,7 +85,10 @@ public class UserController {
 				}
 				
 			}
-		}catch(Exception e) {
+		}catch (CorruptedRequestException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+		}
+		catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
@@ -107,6 +114,7 @@ public class UserController {
 	@GetMapping("/login")
 	public ResponseEntity<User> loginUser(@RequestBody Map<String, String> Json){
 		try {
+			
 			String email, password;
 			if(Json.containsKey("email") && Json.containsKey("password")) {
 				email = Json.get("email");
@@ -115,6 +123,7 @@ public class UserController {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
 			Optional<User> loginUser = userService.findByEmail(email);
+			
 			if(loginUser.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			}else {
@@ -141,10 +150,5 @@ public class UserController {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
-	
-	@PostMapping("/ceva")
-	public String ceva(@RequestBody String nume) {
-		return "Hello " + nume;
 	}
 }
