@@ -9,4 +9,6 @@ import com.reservationapp.persistance.entity.User;
 public interface UserRepository extends CrudRepository<User, Integer>{
 	
 	public Optional<User> findByFirstName(String firstName);
+
+	public Optional<User> findByEmail(String email);
 }

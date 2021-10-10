@@ -17,7 +17,7 @@ public class Reservation {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Integer id;
 	@NotNull
-	private Integer tableNumber;
+	private String tableName;
 	@NotNull
 	private Timestamp reservationBegin;
 
@@ -25,8 +25,8 @@ public class Reservation {
 		
 	}
 	
-	public Reservation(final Integer tableNumber, final Timestamp reservationBegin) {
-		this.tableNumber = tableNumber;
+	public Reservation(final String tableNumber, final Timestamp reservationBegin) {
+		this.tableName = tableNumber;
 		this.reservationBegin = reservationBegin;
 	}
 	
@@ -35,12 +35,12 @@ public class Reservation {
 		return id;
 	}
 
-	public Integer getTableNumber() {
-		return tableNumber;
+	public String getTableNumber() {
+		return tableName;
 	}
 
-	public void setTableNumber(final Integer tableNumber) {
-		this.tableNumber = tableNumber;
+	public void setTableNumber(final String tableNumber) {
+		this.tableName = tableNumber;
 	}
 
 	public Timestamp getReservationBegin() {

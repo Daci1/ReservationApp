@@ -8,16 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.reservationapp.business.service.UserService;
+import com.reservationapp.business.service.exception.CorruptedRequestException;
 import com.reservationapp.persistance.entity.Reservation;
 import com.reservationapp.persistance.entity.User;
 import com.reservationapp.persistance.repository.UserRepository;
+import com.reservationapp.security.util.JwtUtil;
 
 @Service
 public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private UserRepository userRepo;
-
+	@Autowired
+	private JwtUtil jwtUtil;
 	@Override
 	public Set<User> getAllUsers() {
 		Set<User> allUsers = new HashSet<>();
@@ -50,6 +53,18 @@ public class UserServiceImpl implements UserService{
 	public void save(User user) {
 		userRepo.save(user);
 	}
-	
+
+	@Override
+	public Optional<User> findByEmail(String email) {
+		return userRepo.findByEmail(email);
+	}
+
+	@Override
+	public void validateRequestSender(User user, String jwt) throws CorruptedRequestException {
+		String jwtUsername = jwtUtil.extractUsername(jwt);
+		if(!user.getUsername().equals(jwtUsername)) {
+			throw new CorruptedRequestException();
+		}
+	}	
 	
 }
