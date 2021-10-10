@@ -45,53 +45,17 @@ public class UserController {
 	private JwtUtil jwtTokenUtil;
 	
 	@GetMapping("/getall")
-	public ResponseEntity<Set<Reservation>> getAllUsers(){
-		return new ResponseEntity(userService.getAllUsers(), HttpStatus.OK);
-	}
-	
-	@PostMapping("/addreservation")
-	public ResponseEntity<?> addReservationToUser(@RequestBody Map<String, String> Json, @RequestHeader String Authorization){
-		//TODO: add logic+verifications for adding the reservation
+	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization){
 		try {
-			String email;
-			Timestamp reservationBegin;
-			String tableNumber;
-			if(Json.containsKey("email") && Json.containsKey("reservationBegin") && Json.containsKey("tableNumber")) {
-				email = Json.get("email");
-				
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-				Date parsedDate = dateFormat.parse(Json.get("reservationBegin"));
-				reservationBegin = new Timestamp(parsedDate.getTime());
-				
-				tableNumber = Json.get("tableNumber");
+			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
+			if(user.isPresent() && user.get().getRole().equalsIgnoreCase("ADMIN")) {
+				return new ResponseEntity(userService.getAllUsers(), HttpStatus.OK);
 			}else {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>("The sender is not an admin!",HttpStatus.FORBIDDEN);
 			}
-			
-			Optional<User> user = userService.findByEmail(email);
-			if(user.isEmpty()) {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}else {
-				userService.validateRequestSender(user.get(), Authorization);
-				if(reservationService.findReservation(tableNumber, reservationBegin).isPresent()){
-					return new ResponseEntity<>(HttpStatus.CONFLICT);
-				}else {
-					//TODO: move the logic in the service layer
-					Reservation reservation = new Reservation(tableNumber, reservationBegin);
-					reservationService.save(reservation);
-					user.get().addReservation(reservation);
-					userService.save(user.get());
-					return new ResponseEntity<>(HttpStatus.OK);
-				}
-				
-			}
-		}catch (CorruptedRequestException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-		}
-		catch(Exception e) {
+		}catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
+		}	
 	}
 	
 	@PostMapping("/register")

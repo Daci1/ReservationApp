@@ -39,12 +39,6 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void addReservation(User user, Reservation reservation) {
-		user.addReservation(reservation);
-		userRepo.save(user);
-	}
-
-	@Override
 	public Optional<User> findByFirstName(String firstName) {
 		return userRepo.findByFirstName(firstName);
 	}

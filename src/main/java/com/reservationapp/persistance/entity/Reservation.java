@@ -25,8 +25,8 @@ public class Reservation {
 		
 	}
 	
-	public Reservation(final String tableNumber, final Timestamp reservationBegin) {
-		this.tableName = tableNumber;
+	public Reservation(final String tableName, final Timestamp reservationBegin) {
+		this.tableName = tableName;
 		this.reservationBegin = reservationBegin;
 	}
 	
