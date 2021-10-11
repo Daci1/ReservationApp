@@ -60,7 +60,6 @@ public class UserController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@RequestBody User user){
-		System.out.println(user);
 		try {
 			Optional<User> alreadyRegisteredUser = userService.findByEmail(user.getEmail());
 			if(alreadyRegisteredUser.isPresent()) {
