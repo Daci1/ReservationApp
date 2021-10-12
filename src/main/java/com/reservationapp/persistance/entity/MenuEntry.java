@@ -22,21 +22,33 @@ public class MenuEntry {
 	private Double cantity;
 	@NotNull
 	private String productName;
-
-	@JsonIgnore
-	public Integer getId() {
-		return id;
-	}
+	@NotNull
+	private String category;
 
 	public MenuEntry() {
 	}
 
-	public MenuEntry(final Double price, final String description, final Double cantity, final String productName) {
+	public MenuEntry(final Double price, final String description, final Double cantity, final String productName,
+			final String category) {
 		super();
 		this.price = price;
 		this.description = description;
 		this.cantity = cantity;
 		this.productName = productName;
+		this.category = category;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	@JsonIgnore
+	public Integer getId() {
+		return id;
 	}
 
 	public Double getPrice() {
@@ -69,5 +81,11 @@ public class MenuEntry {
 
 	public void setProductName(final String productName) {
 		this.productName = productName;
+	}
+
+	@Override
+	public String toString() {
+		return "MenuEntry [price=" + price + ", description=" + description + ", cantity=" + cantity + ", productName="
+				+ productName + ", category=" + category + "]";
 	}
 }
