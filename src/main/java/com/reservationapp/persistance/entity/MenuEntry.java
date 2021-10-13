@@ -1,9 +1,11 @@
 package com.reservationapp.persistance.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
@@ -21,21 +23,25 @@ public class MenuEntry {
 	@NotNull
 	private Double cantity;
 	@NotNull
+	@Column(unique = true)
 	private String productName;
 	@NotNull
 	private String category;
+	@Lob
+	private String image;
 
 	public MenuEntry() {
 	}
 
 	public MenuEntry(final Double price, final String description, final Double cantity, final String productName,
-			final String category) {
+			final String category, String image) {
 		super();
 		this.price = price;
 		this.description = description;
 		this.cantity = cantity;
 		this.productName = productName;
 		this.category = category;
+		this.image = image;
 	}
 
 	public String getCategory() {
@@ -81,6 +87,14 @@ public class MenuEntry {
 
 	public void setProductName(final String productName) {
 		this.productName = productName;
+	}
+	
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	@Override

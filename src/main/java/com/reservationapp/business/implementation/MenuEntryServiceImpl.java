@@ -5,12 +5,15 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.reservationapp.business.service.MenuEntryService;
 import com.reservationapp.business.service.exception.MenuEntryAlreadyExistsException;
+import com.reservationapp.business.service.exception.MenuEntryNotFoundException;
 import com.reservationapp.persistance.entity.MenuEntry;
 import com.reservationapp.persistance.repository.MenuEntryRepository;
 
+@Service
 public class MenuEntryServiceImpl implements MenuEntryService {
 
 	@Autowired
@@ -35,13 +38,35 @@ public class MenuEntryServiceImpl implements MenuEntryService {
 
 	@Override
 	public void createNewMenuEntry(Double price, String description, Double cantity, String productName,
-			String category) throws MenuEntryAlreadyExistsException {
+			String category, String image) throws MenuEntryAlreadyExistsException {
 		Optional<MenuEntry> alreadyExistingMenuEntry = menuEntryRepo.findByProductName(productName);
 		if (alreadyExistingMenuEntry.isPresent()) {
 			throw new MenuEntryAlreadyExistsException(alreadyExistingMenuEntry.get());
 		} else {
-			MenuEntry newMenuEntry = new MenuEntry(price, description, cantity, productName, category);
+			MenuEntry newMenuEntry = new MenuEntry(price, description, cantity, productName, category, image);
 			menuEntryRepo.save(newMenuEntry);
+		}
+	}
+
+	@Override
+	public Optional<MenuEntry> getMenuEntryByProductName(String productName) {
+		return menuEntryRepo.findByProductName(productName);
+	}
+
+	@Override
+	public void editMenuEntry(Double price, String description, Double cantity, String productName, String category,
+			String image) throws MenuEntryNotFoundException {
+		Optional<MenuEntry> editedMenuEntry = menuEntryRepo.findByProductName(productName);
+		if(editedMenuEntry.isPresent()) {
+			MenuEntry menuEntryAfterEdit = editedMenuEntry.get();
+			menuEntryAfterEdit.setPrice(price);
+			menuEntryAfterEdit.setDescription(description);
+			menuEntryAfterEdit.setCantity(cantity);
+			menuEntryAfterEdit.setProductName(productName);
+			menuEntryAfterEdit.setCategory(category);
+			menuEntryAfterEdit.setImage(image);
+		}else {
+			throw new MenuEntryNotFoundException(productName);
 		}
 	}
 }

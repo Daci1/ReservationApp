@@ -1,11 +1,7 @@
 package com.reservationapp.presentation.controller;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.reservationapp.business.implementation.UserDetailsServiceImpl;
 import com.reservationapp.business.service.ReservationService;
 import com.reservationapp.business.service.UserService;
-import com.reservationapp.business.service.exception.CorruptedRequestException;
 import com.reservationapp.model.AuthenticationRequest;
-import com.reservationapp.persistance.entity.Reservation;
 import com.reservationapp.persistance.entity.User;
 import com.reservationapp.security.util.JwtUtil;
 
@@ -43,11 +38,14 @@ public class UserController {
 	private UserDetailsServiceImpl userDetailsService;
 	@Autowired
 	private JwtUtil jwtTokenUtil;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	@GetMapping("/getall")
 	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization){
 		try {
 			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
+			System.out.println(user.get());
 			if(user.isPresent() && user.get().getRole().equalsIgnoreCase("ADMIN")) {
 				return new ResponseEntity(userService.getAllUsers(), HttpStatus.OK);
 			}else {
@@ -65,6 +63,7 @@ public class UserController {
 			if(alreadyRegisteredUser.isPresent()) {
 				return new ResponseEntity<>(HttpStatus.FOUND);
 			}else {
+				user.setPassword(passwordEncoder.encode(user.getPassword()));
 				userService.save(user);
 				return new ResponseEntity<>(HttpStatus.OK);
 			}
