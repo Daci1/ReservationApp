@@ -1,6 +1,6 @@
 <template>
+<BackButton/>
 <div class="background">
-    <button id="backbutton" @click="goToHome"> &lt;&lt; Go Back</button>
 <div class="container" id="container">
 	<div class="form-container sign-up-container">
 		<form @submit="postData" method="post">
@@ -40,7 +40,11 @@
 </template>
 
 <script>
+import BackButton from '../components/BackButton.vue';
 export default {
+	components:{
+		BackButton,
+	},
     setup() {
         
     },
@@ -62,9 +66,6 @@ export default {
         disableSignUp(){
             const container = document.getElementById('container');
             container.classList.remove("right-panel-active");
-        },
-        goToHome(){
-        this.$router.push('/')
         },
         postData(e){
             e.preventDefault();
@@ -319,14 +320,5 @@ input {
 	margin: 0 5px;
 	height: 40px;
 	width: 40px;
-}
-
-#backbutton{
-    position: absolute;
-    margin: 30px 15px;
-    padding: 15px 15px;
-    text-transform: none;
-    background-color: rgba(211, 69, 4, 0.7);
-
 }
 </style>
