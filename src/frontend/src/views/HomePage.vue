@@ -39,7 +39,7 @@ export default {
       this.$router.push('/')
     },
     goToReservation(){
-      this.$router.push('/')
+      this.$router.push('/reservation')
     }
   }
 
