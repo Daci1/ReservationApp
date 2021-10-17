@@ -88,6 +88,7 @@ public class User implements UserDetails{
 		this.email = email;
 	}
 
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}

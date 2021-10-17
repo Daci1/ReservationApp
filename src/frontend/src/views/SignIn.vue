@@ -8,15 +8,16 @@
             <input type="text" placeholder="Name" v-model="posts.name"/>
             <input type="date" v-model="posts.date"/>
 			<input type="email" placeholder="Email" v-model="posts.email"/>
+			<input type="tel" placeholder="Mobile" v-model="posts.mobile"/>
 			<input type="password" placeholder="Password" v-model="posts.password"/>
 			<button>Sign Up</button>
 		</form>
 	</div>
 	<div class="form-container sign-in-container">
-		<form action="#">
+		<form action="#"  @submit="logIn" method="post">
 			<h1>Sign in</h1>
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
+			<input type="email" placeholder="Email" v-model="loggingUser.email"/>
+			<input type="password" placeholder="Password" v-model="loggingUser.password"/>
 			<a href="#">Forgot your password?</a>
 			<button>Sign In</button>
 		</form>
@@ -41,6 +42,7 @@
 
 <script>
 import BackButton from '../components/BackButton.vue';
+import {logUserIn} from '../managers/userManager.js'
 export default {
 	components:{
 		BackButton,
@@ -54,8 +56,13 @@ export default {
                 name: null,
                 date: null,
                 email: null,
+				mobile: null,
                 password: null
-            }
+            },
+			loggingUser:{
+				email: null,
+				password: null
+			}
         }
     },
     methods:{
@@ -70,7 +77,11 @@ export default {
         postData(e){
             e.preventDefault();
             console.log(this.posts);
-        }
+        },
+		logIn(e){
+			e.preventDefault();
+			logUserIn(this.loggingUser.email, this.loggingUser.password);
+		}
     }
 }
 </script>

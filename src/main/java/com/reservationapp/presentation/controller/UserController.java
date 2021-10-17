@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,7 +47,6 @@ public class UserController {
 	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization){
 		try {
 			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
-			System.out.println(user.get());
 			if(user.isPresent() && user.get().getRole().equalsIgnoreCase("ADMIN")) {
 				return new ResponseEntity(userService.getAllUsers(), HttpStatus.OK);
 			}else {
@@ -73,27 +74,19 @@ public class UserController {
 		
 	}
 	
-	@GetMapping("/login")
-	public ResponseEntity<User> loginUser(@RequestBody Map<String, String> Json){
+	@PostMapping("/getUser")
+	public ResponseEntity<User> getUser(@RequestBody AuthenticationRequest authenticationRequest){
 		try {
-			
-			String email, password;
-			if(Json.containsKey("email") && Json.containsKey("password")) {
-				email = Json.get("email");
-				password = Json.get("password");
-			}else {
+			String email = authenticationRequest.getUsername();
+			if(email == null) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
+			System.out.println(email);
 			Optional<User> loginUser = userService.findByEmail(email);
-			
 			if(loginUser.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}else {
-				if(loginUser.get().getPassword().equals(password)) {
-					return new ResponseEntity<>(loginUser.get(), HttpStatus.OK);
-				}else {
-					return new ResponseEntity<>(HttpStatus.CONFLICT);
-				}
+			}else{
+				return new ResponseEntity<>(loginUser.get(), HttpStatus.OK);
 			}
 		}catch(Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -108,6 +101,8 @@ public class UserController {
 			final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 			final String jwt = jwtTokenUtil.generateToken(userDetails);
 			return ResponseEntity.ok(jwt);
+		}catch (BadCredentialsException | InternalAuthenticationServiceException e) {
+			return new ResponseEntity<>("Bad credentials!", HttpStatus.FORBIDDEN);
 		}catch(Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
