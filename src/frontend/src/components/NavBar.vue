@@ -4,16 +4,31 @@
             <li><router-link class="router" to="/">Home</router-link></li>
             <li><router-link class="router" to="/menu">Menu</router-link></li>
             <li><router-link class="router" to="/">Contact</router-link></li>
-            <li><router-link class="router" to="/signin">Sign in</router-link></li>
+            <li>
+                <router-link v-if="!loggedUser" class="router" to="/signin">Sign in</router-link>
+                <router-link v-if="loggedUser" class="router" @click="signOut" to="/">Sign Out</router-link>
+            </li>
         </ul>
     </div>
 </template>
 
 <script>
+import { getLoggedUser, signUserOut } from "../managers/userManager"
 export default {
-    setup() {
-        
+    data (){
+        return {
+            loggedUser: null
+        }
     },
+    created() {
+        this.loggedUser = getLoggedUser();
+    },
+    methods: {
+        signOut(){
+            signUserOut();
+            this.$router.go();
+        }
+    }
 }
 </script>
 

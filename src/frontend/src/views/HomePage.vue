@@ -36,7 +36,7 @@ export default {
   //TODO
   methods:{
     goToMenu(){
-      this.$router.push('/')
+      this.$router.push('/menu')
     },
     goToReservation(){
       this.$router.push('/reservation')

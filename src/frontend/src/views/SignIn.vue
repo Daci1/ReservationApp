@@ -5,7 +5,8 @@
 	<div class="form-container sign-up-container">
 		<form @submit="postData" method="post">
 			<h1>Create Account</h1>
-            <input type="text" placeholder="Name" v-model="posts.name"/>
+            <input type="text" placeholder="First Name" v-model="posts.firstName"/>
+			<input type="text" placeholder="Last Name" v-model="posts.lastName"/>
             <input type="date" v-model="posts.date"/>
 			<input type="email" placeholder="Email" v-model="posts.email"/>
 			<input type="tel" placeholder="Mobile" v-model="posts.mobile"/>
@@ -20,6 +21,7 @@
 			<input type="password" placeholder="Password" v-model="loggingUser.password"/>
 			<a href="#">Forgot your password?</a>
 			<button>Sign In</button>
+			<span>{{invalidCredentials}}</span>
 		</form>
 	</div>
 	<div class="overlay-container">
@@ -53,7 +55,8 @@ export default {
     data(){
         return {
             posts:{
-                name: null,
+                firstName: null,
+				lastName: null,
                 date: null,
                 email: null,
 				mobile: null,
@@ -62,7 +65,8 @@ export default {
 			loggingUser:{
 				email: null,
 				password: null
-			}
+			},
+			invalidCredentials:"",
         }
     },
     methods:{
@@ -78,9 +82,16 @@ export default {
             e.preventDefault();
             console.log(this.posts);
         },
-		logIn(e){
-			e.preventDefault();
-			logUserIn(this.loggingUser.email, this.loggingUser.password);
+		async logIn(e){
+			try{
+				e.preventDefault();
+				await logUserIn(this.loggingUser.email, this.loggingUser.password);
+				this.invalidCredentials = "";
+				this.$router.push("/");
+			}catch(exception){
+				this.invalidCredentials = "Wrong email or password!";
+			}
+			
 		}
     }
 }
@@ -125,10 +136,13 @@ p {
 }
 
 span {
+	color: rgba(211, 4, 4, 0.7);
 	font-size: 14px;
+	text-decoration: none;
+	margin: 15px 0;
 }
 
-a {
+a{
 	color: rgba(211, 69, 4, 0.7);
 	font-size: 14px;
 	text-decoration: none;
