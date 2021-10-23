@@ -4,6 +4,7 @@ import HomePage from "@/views/HomePage.vue"
 import SignIn from "@/views/SignIn.vue"
 import RestaurantMenu from "@/views/RestaurantMenu.vue"
 import ReservationPage from "@/views/ReservationPage.vue"
+import OwnReservations from "@/views/OwnReservations.vue"
 
 const routes = [
     {
@@ -30,6 +31,11 @@ const routes = [
         path: "/reservation",
         name: "ReservationPage",
         component: ReservationPage
+    },
+    {
+        path: "/ownReservations",
+        name: "OwnReservations",
+        component: OwnReservations
     }
 ]
 

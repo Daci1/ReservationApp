@@ -1,7 +1,7 @@
 <template>
     <NavBar/>
     <div class="wrapper" id="wrapper">
-        <br><br><br>
+        <br><br><br><br><br>
         <div class="menu-container">
             <div class="title">
                 <br>
@@ -9,9 +9,10 @@
             </div>
             <div class="menu">
                 <div v-for="index in 6" :key="index" class="table" @click="makeAReservation(index)">
-                    <img src="../assets/table.png" alt="">
-                    <div class="menu-content">
+                    <div>
+                        <br><span class="tableName">Table {{index}}</span>
                     </div>
+                    <img src="../assets/table.png" alt="">
                 </div>
             </div>
         </div>
@@ -164,16 +165,17 @@ body{
     flex-basis: 580px;
     margin-bottom: 40px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     background-color: rgba(231, 208, 208, 0.3);
     border-radius: 25px;
     cursor:pointer;
+    text-align: center;
 }
 .table:nth-child(5), .table:nth-child(6){
     border-bottom: 0;
 }
-.table img{
+img{
     max-width: 300px;
     margin: 0 auto;
 }
@@ -278,5 +280,9 @@ input{
     font-size: 1.1vw;
     cursor: pointer;
     background: rgba(235, 112, 11, 0.5);
+}
+.tableName{
+    font-size: 30px;
+    color: rgb(251,224,160);
 }
 </style>

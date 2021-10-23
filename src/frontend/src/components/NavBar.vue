@@ -2,12 +2,11 @@
     <div id="container">
         <ul id="nav-bar">
             <li><router-link class="router" to="/">Home</router-link></li>
+            <li><router-link v-if="this.$route.path=='/reservation'" to="/ownReservations">Own Reservation</router-link></li>
             <li><router-link class="router" to="/menu">Menu</router-link></li>
             <li><router-link class="router" to="/">Contact</router-link></li>
-            <li>
-                <router-link v-if="!loggedUser" class="router" to="/signin">Sign in</router-link>
-                <router-link v-if="loggedUser" class="router" @click="signOut" to="/">Sign Out</router-link>
-            </li>
+            <li><router-link v-if="!loggedUser" class="router" to="/signin">Sign in</router-link></li>
+            <li><router-link v-if="loggedUser" class="router" @click="signOut" to="/">Sign Out</router-link></li>
         </ul>
     </div>
 </template>

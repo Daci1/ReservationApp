@@ -60,3 +60,7 @@ export async function registerUser(user){
     let response = await axios.post(url, user);
     
 }
+
+export function isUserLogged(){
+    return getLoggedUser() != null;
+}
