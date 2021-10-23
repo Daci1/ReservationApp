@@ -1,14 +1,14 @@
 import axios from "axios";
 import {reactive} from "vue"
-import { getJWT } from "../managers/userManager"
+import { getJWT, getLoggedUser } from "../managers/userManager"
 let reservations;
-
+let userReservations = [];
 export function getReservations(){
     
     reservations = reactive([]);
     for(let i = 0; i < 9; i++){
         let date = new Date(Date.now());
-        date.setHours(8+2*i);
+        date.setHours(6+2*i);
         date.setMinutes(0);
         date.setSeconds(0);
         let hour = date.getHours();
@@ -49,7 +49,6 @@ export async function getReservationByTableAndDay(tableNumber, day){
             }
         }
     }
-    // console.log(reservations);
 }
 
 function getTwoHourInterval(hour){
@@ -63,4 +62,30 @@ function initializeReservations(){
     for(let reservation of reservations){
         reservation.busyState = false;
     }
+}
+
+async function loadUserReservations(){
+    let email = JSON.parse(localStorage.getItem("user")).email;
+    console.log(email);
+    let url = "/api/reservation/getuserreservations";
+    let response = await axios.post(url, email);
+    userReservations = [];
+
+}
+
+export async function addUserReservation(tableName, date, interval){
+    let reservationBegin = date + " " + interval.substring(0,2) + ":00:00";
+    let url = "/api/reservation/addreservation";
+    let response = await axios.post(url, {
+        tableNumber: tableName,
+        email: getLoggedUser().email,
+        reservationBegin: reservationBegin
+    },
+    {
+        headers: {
+            authorization: getJWT()
+        }
+    });
+    // console.log(reservationBegin);
+    console.log(response);
 }

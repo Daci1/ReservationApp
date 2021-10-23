@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.reservationapp.business.service.UserService;
 import com.reservationapp.business.service.exception.CorruptedRequestException;
+import com.reservationapp.business.service.exception.UserNotFoundException;
 import com.reservationapp.persistance.entity.Reservation;
 import com.reservationapp.persistance.entity.User;
 import com.reservationapp.persistance.repository.UserRepository;
@@ -59,6 +60,16 @@ public class UserServiceImpl implements UserService{
 		if(!user.getUsername().equals(jwtUsername)) {
 			throw new CorruptedRequestException();
 		}
+	}
+
+	@Override
+	public Set<Reservation> getUserReservation(String email) throws UserNotFoundException{
+		Optional<User> searchedUser = userRepo.findByEmail(email);
+		if(searchedUser.isEmpty()) {
+			throw new UserNotFoundException();
+		}
+		
+		return searchedUser.get().getUserReservation();
 	}	
 	
 }

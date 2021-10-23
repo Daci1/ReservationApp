@@ -24,19 +24,21 @@
         
         <div class="grid-container">
             <div v-for="reservation in tableReservations" :key="reservation.interval">
-                <button class="grid-item" v-bind:class="{ busyReservation: reservation.busyState }">
+                <button class="grid-item" v-bind:class="{ busyReservation: reservation.busyState==true }" @click="syncInterval(reservation.reservationInterval)">
                     {{reservation.reservationInterval}}
                 </button> 
             </div>
         </div>
-        <button class="close-button" @click="toggleModal">Close</button>
+        <button class="confirm-button" @click="confirm">Confirm</button>
+        <button class="close-button" @click="deactivateModal">Close</button>
         <!-- <button></button> -->
     </div>
 </template>
 <script>
 // import axios from 'axios';
 import NavBar from '../components/NavBar.vue';
-import {getReservations, getReservationByTableAndDay} from '../managers/reservationManager.js'
+import {getReservations, getReservationByTableAndDay, addUserReservation
+} from '../managers/reservationManager.js'
 import {getJWT} from '../managers/userManager.js'
 export default {
     
@@ -46,6 +48,7 @@ export default {
             tableToReserve: 0,
             tableReservations: null,
             dateToReserve: null,
+            interval: null,
         }
     },
     components:{
@@ -64,7 +67,6 @@ export default {
         this.dateToReserve = this.minDate;
         this.tableReservations = getReservations();
         
-        
     },
     mounted(){
         document.getElementById('inputDate').value = this.minDate;
@@ -72,19 +74,30 @@ export default {
     methods:{
         async makeAReservation(index){
             this.tableToReserve=index;
-            console.log(this.tableToReserve);
-            await this.toggleModal();
+            await this.activateModal();
         },
-        async toggleModal(){
+        async activateModal(){
             let modal = document.querySelector("#modal");
             let wrapper = document.querySelector("#wrapper");
-            modal.classList.toggle("closed-modal");
-            wrapper.classList.toggle("dark-background");
             await getReservationByTableAndDay(this.tableToReserve, this.dateToReserve);
-            
+            wrapper.classList.toggle("dark-background");
+            modal.classList.toggle("closed-modal");
+        },
+        deactivateModal(){
+            let modal = document.querySelector("#modal");
+            let wrapper = document.querySelector("#wrapper");
+            wrapper.classList.toggle("dark-background");
+            modal.classList.toggle("closed-modal");
         },
         async load(){
             await getReservationByTableAndDay(this.tableToReserve, this.dateToReserve);
+        },
+        syncInterval(interval){
+            this.interval = interval;
+        },
+        confirm(){
+            addUserReservation(this.tableToReserve, this.dateToReserve, this.interval);
+            this.deactivateModal();
         }
     }
 }
@@ -195,6 +208,13 @@ body{
     padding: 10px;
     margin: 30px 60px !important;   
 }
+.confirm-button{
+    position: absolute;
+    left:    0;
+    bottom:   0; 
+    padding: 10px;
+    margin: 30px 60px !important;   
+}
 .dark-background{
     background-color: black;
     pointer-events: none
@@ -214,7 +234,7 @@ body{
   cursor: pointer;
   margin: 10px 5px;
 }
-.grid-container button,.close-button{
+.grid-container button,.close-button,.confirm-button{
     text-decoration: none;
     color: inherit;
     padding: 20px 50px;
@@ -226,6 +246,10 @@ body{
     font-size: 1.1vw;
     cursor: pointer;
     background: rgba(235, 112, 11, 0.5);
+}
+.grid-container button:focus{
+    border: 2px solid rgba(44, 24, 15, 0.7);
+    background: rgba(248, 115, 7, 0.897);
 }
 .busyReservation{
     pointer-events: none;
