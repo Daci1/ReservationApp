@@ -48,3 +48,9 @@ export function getLoggedUser(){
 export function signUserOut(){
     localStorage.removeItem("user");
 }
+
+export async function registerUser(user){
+    let url = "/api/user/register";
+    let response = await axios.post(url, user);
+    
+}

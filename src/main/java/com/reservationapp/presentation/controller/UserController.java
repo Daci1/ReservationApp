@@ -59,6 +59,7 @@ public class UserController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@RequestBody User user){
+		
 		try {
 			Optional<User> alreadyRegisteredUser = userService.findByEmail(user.getEmail());
 			if(alreadyRegisteredUser.isPresent()) {
@@ -66,9 +67,11 @@ public class UserController {
 			}else {
 				user.setPassword(passwordEncoder.encode(user.getPassword()));
 				userService.save(user);
+				
 				return new ResponseEntity<>(HttpStatus.OK);
 			}
 		}catch(Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
@@ -81,7 +84,6 @@ public class UserController {
 			if(email == null) {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 			}
-			System.out.println(email);
 			Optional<User> loginUser = userService.findByEmail(email);
 			if(loginUser.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);

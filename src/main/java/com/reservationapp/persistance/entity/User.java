@@ -47,6 +47,16 @@ public class User implements UserDetails{
 	private Timestamp dob;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Reservation> reservations = new HashSet<>();
+	@NotNull
+	private String mobileNo;
+
+	public String getMobileNo() {
+		return mobileNo;
+	}
+
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
+	}
 
 	public User() {
 	}
@@ -88,7 +98,6 @@ public class User implements UserDetails{
 		this.email = email;
 	}
 
-	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
