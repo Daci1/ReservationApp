@@ -2,6 +2,9 @@ package com.reservationapp.presentation.controller;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -65,6 +68,22 @@ public class ReservationController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
 		}
 		catch(Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping("/findreservationbyday")
+	public ResponseEntity<?> findReservationByDay(@RequestBody Map<String, String> Json){
+		try {
+			if(!Json.containsKey("tableName") || !Json.containsKey("day")) {
+				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
+			LocalDateTime dateTime = LocalDate.parse(Json.get("day")).atStartOfDay();
+			String tableName = Json.get("tableName");
+			Timestamp day = Timestamp.valueOf(dateTime);
+			return new ResponseEntity<>(reservationService.findReservationByDayAndTableName(day, tableName) ,HttpStatus.OK);
+		}catch(Exception e){
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

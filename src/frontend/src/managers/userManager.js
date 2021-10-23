@@ -35,10 +35,16 @@ export async function logUserIn(mail, password){
 }
 
 function updateJWT(){
-    let expDate = new Date(Date.now() + 1000*3).toUTCString();
+    let expDate = new Date(Date.now() + 1000*60*60*3).toUTCString();
     let decodedCookie = decodeURIComponent(document.cookie);
     let ca = decodedCookie.split(';');
     document.cookie = "JWT=" + JWT + "; expires=" + expDate + "; path=/;";
+}
+
+export function getJWT(){
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${"JWT"}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
 export function getLoggedUser(){

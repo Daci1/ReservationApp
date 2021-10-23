@@ -17,8 +17,13 @@
         </div>
     </div>
     <div class="modal closed-modal" id="modal">
+        <div>
+            <input id="inputDate" :min="this.minDate" name="reservationDate" type="date" v-model="dateToReserve">
+            <button class="load-button" @click="load">Load</button>
+        </div>
+        
         <div class="grid-container">
-            <div v-for="reservation in tables" :key="reservation.interval">
+            <div v-for="reservation in tableReservations" :key="reservation.interval">
                 <button class="grid-item" v-bind:class="{ busyReservation: reservation.busyState }">
                     {{reservation.reservationInterval}}
                 </button> 
@@ -31,38 +36,55 @@
 <script>
 // import axios from 'axios';
 import NavBar from '../components/NavBar.vue';
-import {getReservations} from '../managers/reservationManager.js'
+import {getReservations, getReservationByTableAndDay} from '../managers/reservationManager.js'
+import {getJWT} from '../managers/userManager.js'
 export default {
     
     data(){
         return{
             selectedFile: null,
             tableToReserve: 0,
-            tables: null,
+            tableReservations: null,
+            dateToReserve: null,
         }
     },
     components:{
         NavBar,
     },
+    date() {
+        return {
+            minDate: null,
+        }
+    },
     setup() {
         
     },
     created(){
-        this.tables = getReservations();
-        console.log(this.tables);
+        this.minDate = new Date().toISOString().split('T')[0];
+        this.dateToReserve = this.minDate;
+        this.tableReservations = getReservations();
+        
+        
+    },
+    mounted(){
+        document.getElementById('inputDate').value = this.minDate;
     },
     methods:{
-        makeAReservation(index){
+        async makeAReservation(index){
             this.tableToReserve=index;
             console.log(this.tableToReserve);
-            this.toggleModal();
+            await this.toggleModal();
         },
-        toggleModal(){
+        async toggleModal(){
             let modal = document.querySelector("#modal");
             let wrapper = document.querySelector("#wrapper");
             modal.classList.toggle("closed-modal");
             wrapper.classList.toggle("dark-background");
+            await getReservationByTableAndDay(this.tableToReserve, this.dateToReserve);
             
+        },
+        async load(){
+            await getReservationByTableAndDay(this.tableToReserve, this.dateToReserve);
         }
     }
 }
@@ -156,7 +178,7 @@ body{
   transform: translate(-50%, -50%);
   width: 50%;
   max-width: 100%;
-  height: 500px;
+  height: 600px;
   max-height: 100%;
   z-index: 1000;
   background: gray;
@@ -210,5 +232,27 @@ body{
     cursor: none;
     color: rgb(255, 0, 0) !important;
     background: rgba(53, 34, 19, 0.5) !important;
+}
+input{
+    outline: 0;
+    border: 1px solid rgba(211, 69, 4, 0.7);
+    padding: 15px 15px;
+	width: 50%;
+    margin-left: 25%;
+    background-color: rgba(251,224,160);
+    font-size: 18px;
+}
+.load-button{
+    text-decoration: none;
+    color: inherit;
+    padding: 10px 30px;
+    text-align: center;
+    margin: 20px 15px;
+    border: 2px solid rgba(211, 69, 4, 0.7);
+    font-weight: bold;
+    border-radius: 25px;
+    font-size: 1.1vw;
+    cursor: pointer;
+    background: rgba(235, 112, 11, 0.5);
 }
 </style>

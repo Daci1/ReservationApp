@@ -1,6 +1,7 @@
 package com.reservationapp.business.implementation;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -51,8 +52,21 @@ public class ReservationServiceImpl implements ReservationService{
 			throw new InvalidReservationTimeException();
 		}
 		Reservation newReservation = new Reservation(tableName, reservationBegin);
+		System.out.println(newReservation.getReservationBegin());
 		reservationRepo.save(newReservation);
 		user.addReservation(newReservation);
 		userRepo.save(user);		
+	}
+
+	@Override
+	public Set<Reservation> findReservationByDayAndTableName(Timestamp day, String tableName) {
+		Set<Reservation> reservations = new HashSet<>();
+		LocalDateTime startOfDay = day.toLocalDateTime().toLocalDate().atStartOfDay();
+		LocalDateTime endOfDay = startOfDay.plusDays(1L);
+		reservationRepo.findByTableNameAndReservationBeginBetween(tableName, Timestamp.valueOf(startOfDay), Timestamp.valueOf(endOfDay))
+						.forEach(reservation -> reservations.add(reservation));;
+//		day = new TimeStamp(LocalDate.)
+//		reservationRepo.findByTableNameAndReservationBegin(tableName, day, );
+		return reservations;
 	}
 }
