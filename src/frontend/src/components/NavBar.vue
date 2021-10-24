@@ -1,6 +1,7 @@
 <template>
     <div id="container">
         <ul id="nav-bar">
+            <li class="admin"><router-link v-if="loggedUser && loggedUser.role=='admin'" class="router" to="/adminPanel">Admin Panel</router-link></li>
             <li><router-link class="router" to="/">Home</router-link></li>
             <li><router-link v-if="this.$route.path=='/reservation'" to="/ownReservations">Own Reservation</router-link></li>
             <li><router-link class="router" to="/menu">Menu</router-link></li>
@@ -25,7 +26,11 @@ export default {
     methods: {
         signOut(){
             signUserOut();
-            this.$router.go();
+            if(this.$route.path === "/"){
+                this.$router.go();
+            }else{
+                this.$router.push("/");
+            }
         }
     }
 }
