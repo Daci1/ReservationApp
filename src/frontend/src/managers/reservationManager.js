@@ -3,6 +3,7 @@ import {reactive} from "vue"
 import { getJWT, getLoggedUser } from "../managers/userManager"
 let reservations;
 let userReservations;
+let allReservations;
 export function getReservations(){
     
     reservations = reactive([]);
@@ -115,4 +116,29 @@ export async function deleteReservation(reservation){
     }
 
     return false;
+}
+
+export async function getAllReservations(){
+    let url = "/api/reservation/getall";
+    let response = await axios.post(url, null, {
+        headers: {
+            authorization: getJWT(),
+        }
+    });
+    allReservations = reactive([]);
+    for(let reservation of response.data){
+        let date = new Date(reservation.reservationBegin);
+        let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
+        let mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date);
+        let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
+        let stringDate = `${ye}-${mo}-${da} ${String(date).split(" ")[4]}`;
+        reservation.reservationBegin = stringDate;
+        allReservations.push({
+            tableNumber: reservation.tableNumber,
+            reservationBegin: reservation.reservationBegin,
+        });
+    }
+
+    return allReservations;
+    
 }

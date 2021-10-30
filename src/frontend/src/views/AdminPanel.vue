@@ -5,11 +5,12 @@
             <div class="pagination-buttons-div">
                 <button @click="prevPage">Previous</button> 
                 <button @click="nextPage">Next</button>
+                <button @click="swapTable">Swap tables</button>
             </div>
             <table>
             <thead>
                 <tr>
-                    <th v-for="header in Object.keys(userTH)" :key="header" @click="sort(header)">{{userTH[header]}}</th>
+                    <th v-for="header in Object.keys(currentTH)" :key="header" @click="sort(header)">{{currentTH[header]}}</th>
                     <th :colspan="this.currentTable === 'users' ? 2 : 1">Action</th>
                 </tr>
             </thead>
@@ -27,7 +28,8 @@
 </template>
 <script>
 import NavBar from "../components/NavBar.vue"
-import {getAllUsers} from "../managers/userManager"
+import {getAllUsers,} from "../managers/userManager"
+import {getAllReservations} from "../managers/reservationManager"
 export default {
     components: {
         NavBar
@@ -43,12 +45,17 @@ export default {
                 mobile: "Mobile",
                 dob: "Date of birth"
             },
+            reservationTH: {
+                tableNumber: "Table Number",
+                reservationBegin: "Reservation Interval"
+            },
             currentTable: "users",
             currentTableRows: [],
             pageSize: 7,
             currentPage: 1,
             currentSort: "email",
             currentSortDir: "desc",
+            currentTH: {},
         }
     },
     setup() {
@@ -57,6 +64,7 @@ export default {
     async created() {
         this.currentTableRows = await getAllUsers();
         this.sort(this.currentSort);
+        this.currentTH = this.userTH;
     },
     computed: {
         sortedRows:function(){
@@ -87,6 +95,17 @@ export default {
                 return 0;
             });
         },
+        async swapTable(){
+            this.currentTableRows = [];
+            this.currentPage = 1;
+            this.currentTable = this.currentTable === "users" ? "reservations" : "users";
+            this.currentTH = this.currentTH === this.userTH ? this.reservationTH : this.userTH;
+            this.currentSort = this.currentSort === "email" ? "reservationBegin" : "email";
+            this.currentSortDir = "desc";
+            this.currentTableRows = this.currentTable === "users" ? await getAllUsers() : await getAllReservations();
+            this.sort(this.currentSort);
+            console.log(this.currentTableRows);
+        }
     }
 }
 </script>
@@ -157,7 +176,7 @@ button{
     margin: 0;
 }
 .pagination-buttons-div{
-    width: 40%;
+    width: 60%;
     margin: 0 auto;
     color: rgb(251,224,160);
 }

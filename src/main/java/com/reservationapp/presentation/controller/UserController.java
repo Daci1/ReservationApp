@@ -1,6 +1,5 @@
 package com.reservationapp.presentation.controller;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -46,7 +44,6 @@ public class UserController {
 	@RequestMapping("/getall")
 	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization){
 		try {
-			System.out.println(authorization);
 			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
 			if(user.isPresent() && user.get().getRole().equalsIgnoreCase("ADMIN")) {
 				return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);

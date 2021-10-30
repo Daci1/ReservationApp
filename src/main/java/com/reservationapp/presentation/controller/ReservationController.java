@@ -113,7 +113,7 @@ public class ReservationController {
 	}
 	
 	@RequestMapping("/deletereservation")
-	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization, @RequestBody Map<String, String> Json){
+	public ResponseEntity<?> deleteReservation(@RequestHeader String authorization, @RequestBody Map<String, String> Json){
 		try {
 			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
 			if(user.isPresent() && Json.containsKey("reservationBegin") && Json.containsKey("tableNumber")) {
@@ -133,5 +133,19 @@ public class ReservationController {
 		}catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
+	}
+	
+	@RequestMapping("/getall")
+	public ResponseEntity<?> getAllReservations(@RequestHeader String authorization){
+		try {
+			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
+			if(user.isPresent() && user.get().getRole().equalsIgnoreCase("ADMIN")) {
+				return new ResponseEntity<>(reservationService.getAllReservations(), HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>("Invalid.",HttpStatus.FORBIDDEN);
+			}
+		}catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }
