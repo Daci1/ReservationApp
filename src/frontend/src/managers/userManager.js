@@ -64,3 +64,31 @@ export async function registerUser(user){
 export function isUserLogged(){
     return getLoggedUser() != null;
 }
+
+export async function getAllUsers(){
+    let url = "/api/user/getall"
+    let response = await axios.post(url, null, {
+        headers: {
+            authorization: getJWT()
+        }
+    });
+    users = reactive([]);
+    for(let user of response.data){
+        let date = new Date(user.dob);
+        let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
+        let mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date);
+        let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
+        let stringDate = `${ye}-${mo}-${da}`;
+        user.dob = stringDate;
+        users.push({
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            mobile: user.mobileNo,
+            dob: user.dob
+        });
+    }
+
+    return users;
+}

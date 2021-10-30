@@ -3,6 +3,7 @@ package com.reservationapp.business.implementation;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,6 +57,7 @@ public class ReservationServiceImpl implements ReservationService{
 		reservationRepo.save(newReservation);
 		user.addReservation(newReservation);
 		userRepo.save(user);		
+		System.out.println(newReservation);
 	}
 
 	@Override
@@ -64,9 +66,23 @@ public class ReservationServiceImpl implements ReservationService{
 		LocalDateTime startOfDay = day.toLocalDateTime().toLocalDate().atStartOfDay();
 		LocalDateTime endOfDay = startOfDay.plusDays(1L);
 		reservationRepo.findByTableNameAndReservationBeginBetween(tableName, Timestamp.valueOf(startOfDay), Timestamp.valueOf(endOfDay))
-						.forEach(reservation -> reservations.add(reservation));;
-//		day = new TimeStamp(LocalDate.)
-//		reservationRepo.findByTableNameAndReservationBegin(tableName, day, );
+						.forEach(reservation -> reservations.add(reservation));
 		return reservations;
+	}
+
+	@Override
+	public void deleteReservation(User user, Reservation reservation) {
+		Set<Reservation> userReservations = user.getUserReservation();
+		Iterator<Reservation> iterator = userReservations.iterator();
+		Reservation r;
+		while(iterator.hasNext()) {
+			r = iterator.next();
+			if(r.getTableNumber().equals(reservation.getTableNumber()) && r.getReservationBegin().toString().equals(reservation.getReservationBegin().toString())) {
+				System.out.println(userReservations.remove(r));
+				userRepo.save(user);
+				reservationRepo.delete(r);
+				break;
+			}
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.reservationapp.persistance.entity;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +30,19 @@ public class Reservation {
 		this.tableName = tableName;
 		this.reservationBegin = reservationBegin;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Reservation other = (Reservation) obj;
+		return this.getTableNumber().equals(other.getTableNumber()) && this.getReservationBegin().toString().equals(other.getReservationBegin().toString());
+	}
+
 	@JsonIgnore
 	public Integer getId() {
 		return id;
@@ -49,6 +62,11 @@ public class Reservation {
 
 	public void setReservationBegin(final Timestamp reservationBegin) {
 		this.reservationBegin = reservationBegin;
+	}
+
+	@Override
+	public String toString() {
+		return "Reservation [id=" + id + ", tableName=" + tableName + ", reservationBegin=" + reservationBegin + "]";
 	}
 
 }

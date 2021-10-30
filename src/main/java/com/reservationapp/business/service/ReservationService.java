@@ -16,4 +16,5 @@ public interface ReservationService {
 	public Optional<Reservation> findReservation(String tableName, Timestamp reservationBegin);
 	public void addNewReservation(User user, Timestamp reservationBegin, String tableName) throws InvalidReservationTimeException;
 	public Set<Reservation> findReservationByDayAndTableName(Timestamp day, String tableName);
+	public void deleteReservation(User user, Reservation reservation);
 }

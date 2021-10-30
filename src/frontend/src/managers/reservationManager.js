@@ -79,9 +79,8 @@ export async function addUserReservation(tableName, date, interval){
 }
 
 export async function getUserReservations(){
-    if(!userReservations){
-        userReservations = reactive([]);
-    }
+    userReservations = reactive([]);
+
     let url = "/api/reservation/getuserreservations";
     let response = await axios.post(url, getLoggedUser().email, {
         headers: {

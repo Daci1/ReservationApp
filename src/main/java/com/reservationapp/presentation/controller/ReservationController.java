@@ -12,6 +12,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,6 +26,7 @@ import com.reservationapp.business.service.exception.InvalidReservationTimeExcep
 import com.reservationapp.business.service.exception.UserNotFoundException;
 import com.reservationapp.persistance.entity.Reservation;
 import com.reservationapp.persistance.entity.User;
+import com.reservationapp.security.util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/reservation")
@@ -34,6 +36,8 @@ public class ReservationController {
 	private UserService userService;
 	@Autowired
 	private ReservationService reservationService;
+	@Autowired
+	private JwtUtil jwtTokenUtil;
 	
 	@PostMapping("/addreservation")
 	public ResponseEntity<?> addReservationToUser(@RequestBody Map<String, String> Json, @RequestHeader String Authorization){
@@ -106,5 +110,28 @@ public class ReservationController {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@RequestMapping("/deletereservation")
+	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization, @RequestBody Map<String, String> Json){
+		try {
+			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
+			if(user.isPresent() && Json.containsKey("reservationBegin") && Json.containsKey("tableNumber")) {
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				Date parsedDate = dateFormat.parse(Json.get("reservationBegin"));
+				Timestamp reservationBegin = new Timestamp(parsedDate.getTime());
+				
+				String tableNumber = Json.get("tableNumber");
+				
+				Reservation reservation = new Reservation(tableNumber, reservationBegin);
+				reservationService.deleteReservation(user.get(), reservation);
+				return new ResponseEntity<>(HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>("Invalid.",HttpStatus.FORBIDDEN);
+			}
+		}catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
 	}
 }

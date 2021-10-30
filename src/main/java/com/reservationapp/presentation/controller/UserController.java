@@ -43,12 +43,13 @@ public class UserController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@GetMapping("/getall")
+	@RequestMapping("/getall")
 	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization){
 		try {
+			System.out.println(authorization);
 			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
 			if(user.isPresent() && user.get().getRole().equalsIgnoreCase("ADMIN")) {
-				return new ResponseEntity(userService.getAllUsers(), HttpStatus.OK);
+				return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
 			}else {
 				return new ResponseEntity<>("The sender is not an admin!",HttpStatus.FORBIDDEN);
 			}

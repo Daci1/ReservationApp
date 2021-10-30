@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="reservation in sortedReservations" :key="reservation.reservationBegin">
+                <tr v-for="reservation in sortedReservations" :key="reservation">
                     <td>{{reservation.tableNumber}}</td>
                     <td>{{reservation.reservationBegin}}</td>
                     <td><button class="delete-button" @click="deleteR(reservation)">Delete</button></td>
@@ -37,8 +37,7 @@ export default {
     },
     data() {
         return {
-            userReservations: null,
-            sortedUserReservations: null,
+            userReservations: [],
             currentSort: 'reservationBegin',
             currentSortDir: 'desc',
             pageSize: 8,
@@ -47,10 +46,10 @@ export default {
     },
     async created() {
         this.userReservations = await getUserReservations();
-        this.sort("reservationBegin");
+        this.sort(this.currentSort);
     },
     computed: {
-        sortedReservations: function(){
+        sortedReservations:function(){
             return this.userReservations.filter((row, index) => {
                 let start = (this.currentPage-1)*this.pageSize;
                 let end = this.currentPage*this.pageSize;
@@ -64,14 +63,13 @@ export default {
             this.currentSortDir = this.currentSortDir==='asc'?'desc':'asc';
             }
             this.currentSort = s;
-            this.userReservations.slice().sort((a,b) => {
+            this.userReservations.sort((a,b) => {
                 let modifier = 1;
                 if(this.currentSortDir === 'desc') modifier = -1;
                 if(a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
                 if(a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
                 return 0;
             });
-            console.log(this.sortedUserReservations);
         },
         nextPage:function() {
             if((this.currentPage*this.pageSize) < this.userReservations.length) this.currentPage++;
