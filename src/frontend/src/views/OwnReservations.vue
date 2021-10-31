@@ -42,6 +42,7 @@ export default {
             currentSortDir: 'asc',
             pageSize: 8,
             currentPage: 1,
+            reservationToDelete: {},
         }
     },
     async created() {
@@ -77,9 +78,13 @@ export default {
         prevPage:function() {
         if(this.currentPage > 1) this.currentPage--;
         },
-        deleteR(reservation){
-            if(deleteReservation(reservation)){
+        async deleteR(reservation){
+            this.reservationToDelete = reservation;
+            let confirmation = confirm("Are you sure you want to delete the reservation?");
+            if(confirmation && await deleteReservation(reservation)){
                 this.$router.go();
+            }else{
+                this.reservationToDelete = reservation;
             }
         }
     }
