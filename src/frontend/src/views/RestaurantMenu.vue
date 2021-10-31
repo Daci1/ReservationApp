@@ -47,7 +47,7 @@
                         <button class="close-button" @click="deactivateModal">Close</button>
                         </form>
         </div>
-        <button class="add-button" @click="activateModal()">+</button>
+        <button v-if="loggedUser && loggedUser.role.toUpperCase() === `ADMIN`" class="add-button" @click="activateModal()">+</button>
     </div>
 </template>
 <script>
@@ -79,8 +79,8 @@ export default {
         
     },
     async created(){
+        this.loggedUser = await getLoggedUser();
         this.menuEntries = await getAllMenuEntires();
-        this.loggedUser = getLoggedUser(); 
     },
     methods:{
         activateModal(menuEntry){
