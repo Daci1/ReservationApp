@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.reservationapp.business.implementation.UserDetailsServiceImpl;
 import com.reservationapp.business.service.ReservationService;
 import com.reservationapp.business.service.UserService;
+import com.reservationapp.business.service.exception.UserNotFoundException;
 import com.reservationapp.model.AuthenticationRequest;
 import com.reservationapp.persistance.entity.User;
 import com.reservationapp.security.util.JwtUtil;
@@ -58,7 +59,7 @@ public class UserController {
 	}
 	
 	@RequestMapping("/editUser")
-	public ResponseEntity<?> getAllUsers(@RequestHeader String authorization, @RequestBody User user, @RequestParam String oldUserEmail){
+	public ResponseEntity<?> editUser(@RequestHeader String authorization, @RequestBody User user, @RequestParam String oldUserEmail){
 		try {
 			System.out.println(oldUserEmail);
 			Optional<User> admin = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
@@ -68,6 +69,26 @@ public class UserController {
 			}else {
 				return new ResponseEntity<>("The sender is not an admin!",HttpStatus.FORBIDDEN);
 			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
+	}
+	
+	@RequestMapping("/deleteUser")
+	public ResponseEntity<?> deleteUser(@RequestHeader String authorization, @RequestBody String userEmail){
+		try {
+			Optional<User> admin = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
+			if(admin.isPresent() && admin.get().getRole().equalsIgnoreCase("ADMIN")) {
+				userEmail = userEmail.replace("%40", "@");
+				userEmail = userEmail.replace("=", "");
+				userService.deleteUser(userEmail);
+				return new ResponseEntity<>(HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>("The sender is not an admin!",HttpStatus.FORBIDDEN);
+			}
+		}catch (UserNotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

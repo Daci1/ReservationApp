@@ -105,3 +105,16 @@ export async function updateUser(user, oldUserEmail){
     }
     return false;
 }
+
+export async function deleteUser(userEmail){
+    let url = "/api/user/deleteUser";
+    let response = await axios.post(url, userEmail,{
+        headers:{
+            authorization: getJWT(),
+        }
+    });
+    if(response.status && response.status == 200){
+        return true;
+    }
+    return false;
+}

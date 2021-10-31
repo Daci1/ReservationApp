@@ -52,7 +52,7 @@
 </template>
 <script>
 import NavBar from "../components/NavBar.vue"
-import {getAllUsers, updateUser,} from "../managers/userManager"
+import {getAllUsers, updateUser, deleteUser,} from "../managers/userManager"
 import {getAllReservations, deleteReservation} from "../managers/reservationManager"
 export default {
     components: {
@@ -60,7 +60,6 @@ export default {
     },
     data() {
         return {
-            // userTH: ["Email", "First Name", "Last Name", "Role", "Mobile", "Date of birth"],
             userTH:{
                 email: "Email",
                 firstName: "First Name",
@@ -89,6 +88,7 @@ export default {
                 dob: null,
             },
             oldUserEmail: null,
+            rowToDelete: null,
         }
     },
     setup() {
@@ -140,12 +140,16 @@ export default {
             console.log(this.currentTableRows);
         },
         async deleteRow(row){
-            if(this.currentTH === "users"){
-                console.log();
-            }else{
-                if(deleteReservation(row)){
+            this.rowToDelete = row;
+            if(this.currentTable === "users"){
+                let confirmation = confirm(`Are you sure you want to delete the user ${this.rowToDelete.email}?`);
+                if(confirmation && await deleteUser(this.rowToDelete.email)){
                     this.$router.go();
-                    // this.swapTable();
+                }
+            }else{
+                let confirmation = confirm(`Are you sure you want to delete the reservation?`);
+                if(confirmation && await deleteReservation(this.rowToDelete)){
+                    this.$router.go();
                 }
             }
         },

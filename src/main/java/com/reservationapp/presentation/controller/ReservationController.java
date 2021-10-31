@@ -49,10 +49,14 @@ public class ReservationController {
 				email = Json.get("email");
 				email = email.replace("%40", "@");
 				email = email.replace("=", "");
+				System.out.println(Json.get("reservationBegin"));
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				Date parsedDate = dateFormat.parse(Json.get("reservationBegin"));
 				reservationBegin = new Timestamp(parsedDate.getTime());
-				
+				if(reservationBegin.getHours() == 0) {
+					reservationBegin.setHours(12);
+				}
+				System.out.println(reservationBegin);
 				tableNumber = Json.get("tableNumber");
 			}else {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -35,8 +35,13 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void deleteUser(User user) {
-		userRepo.delete(user);
+	public void deleteUser(String userEmail) throws UserNotFoundException {
+		Optional<User> user = userRepo.findByEmail(userEmail);
+		if(user.isEmpty()) {
+			throw new UserNotFoundException();
+		}else {
+			userRepo.delete(user.get());
+		}
 	}
 
 	@Override
@@ -75,7 +80,6 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void updateUser(User updatedUser, String oldUserEmail) {
 		Optional<User> user = userRepo.findByEmail(oldUserEmail);
-		System.out.println(updatedUser);
 		if(user.isPresent()) {
 			User userObj = user.get();
 			userObj.setDob(updatedUser.getDob());
@@ -84,9 +88,7 @@ public class UserServiceImpl implements UserService{
 			userObj.setLastName(updatedUser.getLastName());
 			userObj.setMobileNo(updatedUser.getMobileNo());
 			userObj.setRole(updatedUser.getRole());
-			System.out.println(userObj);
 			userRepo.save(userObj);
-			System.out.println(userObj);
 		}
 	}	
 	
