@@ -81,8 +81,12 @@ export default {
     },
     async created(){
         this.loggedUser = await getLoggedUser();
-        this.userRole = this.loggedUser.role.toUpperCase();
+        if(this.loggedUser){
+            this.userRole = this.loggedUser.role.toUpperCase();
+        }
         this.menuEntries = await getAllMenuEntires();
+        console.log()
+
     },
     methods:{
         activateModal(menuEntry){
