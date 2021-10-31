@@ -27,3 +27,17 @@ export async function getAllMenuEntires(){
     }
     return menuEntries;
 }
+
+export async function deleteMenuEntry(menuEntry){
+    console.log(menuEntry);
+    let url = "/api/menu/deleteMenuEntry";
+    let response = await axios.post(url, menuEntry, {
+        headers: {
+            authorization: getJWT(),
+        }
+    });
+    if(response.status && response.status == 200){
+        return true;
+    }
+    return false;
+}

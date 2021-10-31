@@ -67,4 +67,9 @@ public class MenuEntryServiceImpl implements MenuEntryService {
 			throw new MenuEntryNotFoundException(productName);
 		}
 	}
+
+	@Override
+	public void deleteMenuEntry(MenuEntry menuEntry) {
+		menuEntryRepo.delete(menuEntry);	
+	}
 }

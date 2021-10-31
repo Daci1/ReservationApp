@@ -10,7 +10,12 @@
             <div class="menu">
                 <div class="single-menu" v-for="menuEntry of menuEntries" :key="menuEntry.productName">
                     <div class="menu-content">
-                        <h4>{{menuEntry.category}}-{{menuEntry.productName}}<span>${{menuEntry.price}}</span></h4>
+                        <h4>{{menuEntry.category}}-{{menuEntry.productName}}
+                            <span>${{menuEntry.price}}</span>
+                            <button class="delete-button" v-if="this.loggedUser && this.loggedUser.role.toUpperCase() === 'ADMIN'" @click="deleteEntry(menuEntry)">
+                                Delete
+                            </button>
+                        </h4>
                         <p>{{menuEntry.description}}</p>
                         <span class="gramaj">{{menuEntry.quantity}}g</span>
                     </div>
@@ -45,7 +50,8 @@
 <script>
 import axios from 'axios';
 import BackButton from '../components/BackButton.vue';
-import {addNewMenuEntry, getAllMenuEntires} from '../managers/menuEntryManager'
+import {addNewMenuEntry, getAllMenuEntires, deleteMenuEntry} from '../managers/menuEntryManager'
+import {getLoggedUser} from "../managers/userManager"
 export default {
     
     data(){
@@ -58,6 +64,8 @@ export default {
                 quantity: null
             },
             menuEntries: [],
+            loggedUser: {},
+            menuEntryToDelete: {},
         }
     },
     components:{
@@ -68,7 +76,7 @@ export default {
     },
     async created(){
         this.menuEntries = await getAllMenuEntires();
-        console.log(this.menuEntries);
+        this.loggedUser = getLoggedUser(); 
     },
     methods:{
         onFileSelected(event){
@@ -96,6 +104,17 @@ export default {
             e.preventDefault();
             if(addNewMenuEntry(this.newProduct)){
                 this.$router.go();
+            }
+        },
+        async deleteEntry(menuEntry){
+            this.menuEntryToDelete = menuEntry;
+            let acceptDelete = confirm(`Are you sure you want to delete ${this.menuEntryToDelete.category}-${this.menuEntryToDelete.productName}?`);
+            if(acceptDelete){
+                if(await deleteMenuEntry(this.menuEntryToDelete)){
+                    this.$router.go();
+                }
+            }else{
+                this.menuEntryToDelete = null;
             }
         }
     }
@@ -283,5 +302,20 @@ input, select, textarea{
    position: absolute;
     right:    0;
     /* bottom:   0;   */
+}
+
+.delete-button{
+    padding: 8px 8px 8px;
+    line-height: 20px;
+    text-transform: none;
+    background-color: rgba(211, 69, 4, 0.7);
+    border: 1px solid rgba(211, 69, 4, 1);
+    color: rgba(251,224,160);
+    border-radius: 20px;
+    font-size: 20px;
+	font-weight: bold;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	transition: transform 80ms ease-in;
 }
 </style>

@@ -78,4 +78,20 @@ public class MenuEntryController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping("/deleteMenuEntry")
+	public ResponseEntity<?> deleteMenuEntry(@RequestBody MenuEntry menuEntry){
+		try {
+			Optional<MenuEntry> searchedMenuEntry = menuEntryService.getMenuEntryByProductName(menuEntry.getProductName());
+			if(searchedMenuEntry.isPresent()){
+				menuEntryService.deleteMenuEntry(searchedMenuEntry.get());
+				return new ResponseEntity<>(HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

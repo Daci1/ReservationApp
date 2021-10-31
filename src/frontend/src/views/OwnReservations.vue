@@ -41,7 +41,7 @@ export default {
             currentSort: 'reservationBegin',
             currentSortDir: 'asc',
             pageSize: 8,
-            currentPage: 1
+            currentPage: 1,
         }
     },
     async created() {

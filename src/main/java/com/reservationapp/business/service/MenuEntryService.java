@@ -22,4 +22,6 @@ public interface MenuEntryService {
 	
 	public void editMenuEntry(Double price, String description, Double cantity, String productName,
 			String category) throws MenuEntryNotFoundException;
+
+	public void deleteMenuEntry(MenuEntry menuEntry);
 }
