@@ -47,7 +47,7 @@
                         <button class="close-button" @click="deactivateModal">Close</button>
                         </form>
         </div>
-        <button v-if="loggedUser && loggedUser.role.toUpperCase() === `ADMIN`" class="add-button" @click="activateModal()">+</button>
+        <button v-if="loggedUser  && userRole === `ADMIN`" class="add-button" @click="activateModal()">+</button>
     </div>
 </template>
 <script>
@@ -70,6 +70,7 @@ export default {
             menuEntryToDelete: {},
             editReservation: false,
             oldMenuEntry: null,
+            userRole: null,
         }
     },
     components:{
@@ -80,6 +81,7 @@ export default {
     },
     async created(){
         this.loggedUser = await getLoggedUser();
+        this.userRole = this.loggedUser.role.toUpperCase();
         this.menuEntries = await getAllMenuEntires();
     },
     methods:{
@@ -117,6 +119,7 @@ export default {
                     this.$router.go();
                 }
             }
+            this.$router.go();
 
         },
         async deleteEntry(menuEntry){
