@@ -1,8 +1,10 @@
 package com.reservationapp.business.service;
 
+import java.util.Optional;
 import java.util.Set;
 
 import com.reservationapp.business.service.exception.MenuEntryAlreadyExistsException;
+import com.reservationapp.business.service.exception.MenuEntryNotFoundException;
 import com.reservationapp.persistance.entity.MenuEntry;
 
 public interface MenuEntryService {
@@ -15,4 +17,11 @@ public interface MenuEntryService {
 	public void save(MenuEntry menuEntry);
 
 	public Set<MenuEntry> getMenuEntryByCategory(String category);
+	
+	public Optional<MenuEntry> getMenuEntryByProductName(String productName);
+	
+	public void editMenuEntry(Double price, String description, Double cantity, String productName,
+			String category) throws MenuEntryNotFoundException;
+
+	public void deleteMenuEntry(MenuEntry menuEntry);
 }

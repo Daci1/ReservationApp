@@ -3,22 +3,28 @@
 <div class="background">
 <div class="container" id="container">
 	<div class="form-container sign-up-container">
-		<form @submit="postData" method="post">
+		<form @submit="registerAccount" method="post">
+			<!-- <br> -->
 			<h1>Create Account</h1>
-            <input type="text" placeholder="Name" v-model="posts.name"/>
-            <input type="date" v-model="posts.date"/>
-			<input type="email" placeholder="Email" v-model="posts.email"/>
-			<input type="password" placeholder="Password" v-model="posts.password"/>
+            <input required="required" type="text" placeholder="First Name" v-model="registerUser.firstName"/>
+			<input required="required" type="text" placeholder="Last Name" v-model="registerUser.lastName"/>
+            <input required="required" type="date" v-model="registerUser.dob"/>
+			<input required="required" type="email" placeholder="Email" v-model="registerUser.email"/>
+			<input required="required" type="tel" placeholder="Mobile" v-model="registerUser.mobileNo"/>
+			<input required="required" type="password" placeholder="Password" v-model="registerUser.password"/>
+			<span>{{invalidRegisterCredentials}}</span>
 			<button>Sign Up</button>
+			<!-- <br> -->
 		</form>
 	</div>
 	<div class="form-container sign-in-container">
-		<form action="#">
+		<form action="#"  @submit="logIn" method="post">
 			<h1>Sign in</h1>
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
+			<input type="email" placeholder="Email" v-model="loggingUser.email"/>
+			<input type="password" placeholder="Password" v-model="loggingUser.password"/>
 			<a href="#">Forgot your password?</a>
 			<button>Sign In</button>
+			<span>{{invalidCredentials}}</span>
 		</form>
 	</div>
 	<div class="overlay-container">
@@ -41,6 +47,7 @@
 
 <script>
 import BackButton from '../components/BackButton.vue';
+import { logUserIn, registerUser } from '../managers/userManager.js'
 export default {
 	components:{
 		BackButton,
@@ -50,27 +57,60 @@ export default {
     },
     data(){
         return {
-            posts:{
-                name: null,
-                date: null,
+            registerUser:{
+                firstName: null,
+				lastName: null,
+                dob: null,
                 email: null,
+				mobileNo: null,
                 password: null
-            }
+            },
+			loggingUser:{
+				email: null,
+				password: null
+			},
+			invalidCredentials:"",
+			invalidRegisterCredentials:"",
+
         }
     },
     methods:{
         toggleSignUp(){
             const container = document.getElementById('container');
             container.classList.add("right-panel-active");
+			this.invalidRegisterCredentials = "";
         },
         disableSignUp(){
             const container = document.getElementById('container');
             container.classList.remove("right-panel-active");
+			this.invalidCredentials = "";
         },
-        postData(e){
-            e.preventDefault();
-            console.log(this.posts);
-        }
+        async registerAccount(e){
+			e.preventDefault();
+			try{
+				await registerUser(this.registerUser);
+				this.$router.go();
+			}catch(err){
+				//add invalid credentials
+				if(String(err).includes("302")){
+					this.invalidRegisterCredentials = "Already used email!";
+				}
+			}
+            
+			
+            // console.log(this.registerUser);
+        },
+		async logIn(e){
+			try{
+				e.preventDefault();
+				await logUserIn(this.loggingUser.email, this.loggingUser.password);
+				this.invalidCredentials = "";
+				this.$router.push("/");
+			}catch(exception){
+				this.invalidCredentials = "Wrong email or password!";
+			}
+			
+		}
     }
 }
 </script>
@@ -93,8 +133,9 @@ export default {
     
     width: 50%;
     margin: auto;
-    transform: scale(1.2, 1.2) translateY(50%);
-    -ms-transform: scale(1.2, 1.2) translateY(50%);
+	height: 60%;
+    transform: scale(1.1, 1.1) translateY(40%);
+    -ms-transform: scale(1.1, 1.1) translateY(40%);
 }
 h1 {
 	font-weight: bold;
@@ -114,10 +155,13 @@ p {
 }
 
 span {
+	color: rgba(211, 4, 4, 0.7);
 	font-size: 14px;
+	text-decoration: none;
+	margin: 15px 0;
 }
 
-a {
+a{
 	color: rgba(211, 69, 4, 0.7);
 	font-size: 14px;
 	text-decoration: none;
@@ -131,6 +175,7 @@ button {
 	font-size: 14px;
 	font-weight: bold;
 	padding: 12px 45px;
+	margin-bottom: 10px;
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
@@ -168,7 +213,7 @@ form {
 input {
 	background-color: rgba(251,224,160);
     border: 1px solid rgba(211, 69, 4, 0.7);
-	padding: 12px 15px;
+	padding: 15px 15px;
 	margin: 8px 0;
 	width: 100%;
     outline: 0;

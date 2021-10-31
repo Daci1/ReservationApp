@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.reservationapp.business.service.UserService;
 import com.reservationapp.business.service.exception.CorruptedRequestException;
+import com.reservationapp.business.service.exception.UserNotFoundException;
 import com.reservationapp.persistance.entity.Reservation;
 import com.reservationapp.persistance.entity.User;
 import com.reservationapp.persistance.repository.UserRepository;
@@ -34,8 +35,13 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void deleteUser(User user) {
-		userRepo.delete(user);
+	public void deleteUser(String userEmail) throws UserNotFoundException {
+		Optional<User> user = userRepo.findByEmail(userEmail);
+		if(user.isEmpty()) {
+			throw new UserNotFoundException();
+		}else {
+			userRepo.delete(user.get());
+		}
 	}
 
 	@Override
@@ -58,6 +64,31 @@ public class UserServiceImpl implements UserService{
 		String jwtUsername = jwtUtil.extractUsername(jwt);
 		if(!user.getUsername().equals(jwtUsername)) {
 			throw new CorruptedRequestException();
+		}
+	}
+
+	@Override
+	public Set<Reservation> getUserReservation(String email) throws UserNotFoundException{
+		Optional<User> searchedUser = userRepo.findByEmail(email);
+		if(searchedUser.isEmpty()) {
+			throw new UserNotFoundException();
+		}
+		
+		return searchedUser.get().getUserReservation();
+	}
+
+	@Override
+	public void updateUser(User updatedUser, String oldUserEmail) {
+		Optional<User> user = userRepo.findByEmail(oldUserEmail);
+		if(user.isPresent()) {
+			User userObj = user.get();
+			userObj.setDob(updatedUser.getDob());
+			userObj.setEmail(updatedUser.getEmail());
+			userObj.setFirstName(updatedUser.getFirstName());
+			userObj.setLastName(updatedUser.getLastName());
+			userObj.setMobileNo(updatedUser.getMobileNo());
+			userObj.setRole(updatedUser.getRole());
+			userRepo.save(userObj);
 		}
 	}	
 	

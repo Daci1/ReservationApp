@@ -1,5 +1,5 @@
 <template>
-    <button id="backbutton" @click="goToHome"> &lt;&lt; Go Back</button> 
+    <button id="backbutton" @click="goBack"> &lt;&lt; Go Back</button> 
 </template>
 <script>
 export default {
@@ -7,8 +7,9 @@ export default {
         
     },
     methods:{
-        goToHome(){
-        this.$router.push('/')
+        goBack(){
+            console.log(this.$router);
+        this.$router.go(-1);
         },
     }
 }

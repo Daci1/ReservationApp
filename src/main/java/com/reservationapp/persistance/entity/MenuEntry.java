@@ -1,5 +1,6 @@
 package com.reservationapp.persistance.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,8 +20,9 @@ public class MenuEntry {
 	@NotNull
 	private String description;
 	@NotNull
-	private Double cantity;
+	private Double quantity;
 	@NotNull
+	@Column(unique = true)
 	private String productName;
 	@NotNull
 	private String category;
@@ -33,7 +35,7 @@ public class MenuEntry {
 		super();
 		this.price = price;
 		this.description = description;
-		this.cantity = cantity;
+		this.quantity = cantity;
 		this.productName = productName;
 		this.category = category;
 	}
@@ -67,12 +69,12 @@ public class MenuEntry {
 		this.description = description;
 	}
 
-	public Double getCantity() {
-		return cantity;
+	public Double getQuantity() {
+		return quantity;
 	}
 
-	public void setCantity(final Double cantity) {
-		this.cantity = cantity;
+	public void setQuantity(final Double quantity) {
+		this.quantity = quantity;
 	}
 
 	public String getProductName() {
@@ -85,7 +87,7 @@ public class MenuEntry {
 
 	@Override
 	public String toString() {
-		return "MenuEntry [price=" + price + ", description=" + description + ", cantity=" + cantity + ", productName="
+		return "MenuEntry [price=" + price + ", description=" + description + ", cantity=" + quantity + ", productName="
 				+ productName + ", category=" + category + "]";
 	}
 }

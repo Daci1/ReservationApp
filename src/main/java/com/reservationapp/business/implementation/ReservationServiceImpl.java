@@ -1,7 +1,9 @@
 package com.reservationapp.business.implementation;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,8 +53,34 @@ public class ReservationServiceImpl implements ReservationService{
 			throw new InvalidReservationTimeException();
 		}
 		Reservation newReservation = new Reservation(tableName, reservationBegin);
+		newReservation.setUser(user);
 		reservationRepo.save(newReservation);
 		user.addReservation(newReservation);
-		userRepo.save(user);		
+		userRepo.save(user);
+	}
+
+	@Override
+	public Set<Reservation> findReservationByDayAndTableName(Timestamp day, String tableName) {
+		Set<Reservation> reservations = new HashSet<>();
+		LocalDateTime startOfDay = day.toLocalDateTime().toLocalDate().atStartOfDay();
+		LocalDateTime endOfDay = startOfDay.plusDays(1L);
+		reservationRepo.findByTableNameAndReservationBeginBetween(tableName, Timestamp.valueOf(startOfDay), Timestamp.valueOf(endOfDay))
+						.forEach(reservation -> reservations.add(reservation));
+		return reservations;
+	}
+
+	@Override
+	public void deleteReservation(User user, Reservation reservation) {
+		Optional<Reservation> searchedReservation = reservationRepo.findByTableNameAndReservationBegin(reservation.getTableNumber(), reservation.getReservationBegin());
+		if(searchedReservation.isEmpty()) {
+			return;
+		}
+		Reservation deleteReservation = searchedReservation.get();
+		Set<Reservation> userReservations = deleteReservation.getUser().getUserReservation();
+		if(userReservations.contains(deleteReservation) && (deleteReservation.getUser().equals(user) || user.getRole().equalsIgnoreCase("Admin"))){
+			userReservations.remove(deleteReservation);
+			reservationRepo.delete(deleteReservation);
+			userRepo.save(deleteReservation.getUser());
+		}
 	}
 }

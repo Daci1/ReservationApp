@@ -1,19 +1,39 @@
 <template>
     <div id="container">
         <ul id="nav-bar">
+            <li class="admin"><router-link v-if="loggedUser && loggedUser.role=='admin'" class="router" to="/adminPanel">Admin Panel</router-link></li>
             <li><router-link class="router" to="/">Home</router-link></li>
+            <li><router-link v-if="this.$route.path=='/reservation'" to="/ownReservations">Own Reservation</router-link></li>
+            <li><router-link v-if="this.$route.path !== '/reservation' && this.$route.path!=='/'" to="/reservation">Make a Reservation</router-link></li>
             <li><router-link class="router" to="/menu">Menu</router-link></li>
             <li><router-link class="router" to="/">Contact</router-link></li>
-            <li><router-link class="router" to="/signin">Sign in</router-link></li>
+            <li><router-link v-if="!loggedUser" class="router" to="/signin">Sign in</router-link></li>
+            <li><router-link v-if="loggedUser" class="router" @click="signOut" to="/">Sign Out</router-link></li>
         </ul>
     </div>
 </template>
 
 <script>
+import { getLoggedUser, signUserOut } from "../managers/userManager"
 export default {
-    setup() {
-        
+    data (){
+        return {
+            loggedUser: null
+        }
     },
+    created() {
+        this.loggedUser = getLoggedUser();
+    },
+    methods: {
+        signOut(){
+            signUserOut();
+            if(this.$route.path === "/"){
+                this.$router.go();
+            }else{
+                this.$router.push("/");
+            }
+        }
+    }
 }
 </script>
 

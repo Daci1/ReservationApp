@@ -20,6 +20,7 @@
 
 <script>
 import NavBar from '../components/NavBar.vue'
+import {isUserLogged} from '../managers/userManager'
 export default {
   name: 'HelloWorld',
   components:{
@@ -36,10 +37,15 @@ export default {
   //TODO
   methods:{
     goToMenu(){
-      this.$router.push('/')
+      this.$router.push('/menu')
     },
     goToReservation(){
-      this.$router.push('/reservation')
+      if(isUserLogged()){
+        this.$router.push('/reservation')
+      }else{
+        this.$router.push('/signin');
+      }
+      
     }
   }
 
