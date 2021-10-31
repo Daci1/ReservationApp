@@ -29,25 +29,25 @@
                             <label for="email">Email</label>
                             <input required type="text" id="email" name="email" :placeholder="selectedUserToEdit.email" v-model="selectedUserToEdit.email">
 
-                            <label for="price">Product price</label>
-                            <input required type="text" id="price" name="price" placeholder="Product price.." v-model="selectedUserToEdit.firstName">
+                            <label for="firstName">First Name</label>
+                            <input required type="text" id="firstName" name="firstName" placeholder="User First Name.." v-model="selectedUserToEdit.firstName">
 
-                            <label for="quantity">Product quantity</label>
-                            <input required type="text" id="quantity" name="quantity" placeholder="Product quantity.." v-model="selectedUserToEdit.lastName">
+                            <label for="lastName">Last Name</label>
+                            <input required type="text" id="lastName" name="lastName" placeholder="User Last Name.." v-model="selectedUserToEdit.lastName">
 
-                            <label for="category">Product category</label>
-                            <input required type="text" id="category" name="category" placeholder="Product category.." v-model="selectedUserToEdit.mobileNo">
+                            <label for="mobileNo">Mobile Number</label>
+                            <input required type="text" id="mobileNo" name="mobileNo" placeholder="User Mobile Number.." v-model="selectedUserToEdit.mobileNo">
 
-                            <label for="category">Product category</label>
-                            <input required type="text" id="category" name="category" placeholder="Product category.." v-model="selectedUserToEdit.role">
+                            <label for="role">Role</label>
+                            <input required type="text" id="role" name="role" placeholder="User Role.." v-model="selectedUserToEdit.role">
 
-                            <label for="category">Product category</label>
-                            <input required type="date" id="category" name="category" placeholder="Product category.." v-model="selectedUserToEdit.dob">
+                            <label for="dob">Date of Birth</label>
+                            <input required type="date" id="dob" name="dob" placeholder="User Date of Birth.." v-model="selectedUserToEdit.dob">
 
                         <button class="confirm-button">Confirm</button>
                         <button class="close-button" @click="deactivateModal">Close</button>
                         </form>
-        </div>
+                </div>
     </div>
 </template>
 <script>
@@ -175,10 +175,11 @@ export default {
             wrapper.classList.toggle("dark-background");
             modal.classList.toggle("closed-modal");
         },
-        confirm(e){
+        async confirm(e){
             e.preventDefault();
             console.log(this.selectedUserToEdit);
-            if(updateUser(this.selectedUserToEdit, this.oldUserEmail)){
+            if(await updateUser(this.selectedUserToEdit, this.oldUserEmail)){
+                this.currentTableRows = await getAllUsers();
                 this.$router.go();
             }
         }

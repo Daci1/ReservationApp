@@ -6,6 +6,7 @@ import RestaurantMenu from "@/views/RestaurantMenu.vue"
 import ReservationPage from "@/views/ReservationPage.vue"
 import OwnReservations from "@/views/OwnReservations.vue"
 import AdminPanel from "@/views/AdminPanel.vue"
+import ProfilePage from "@/views/ProfilePage.vue"
 
 const routes = [
     {
@@ -42,6 +43,11 @@ const routes = [
         path: "/adminPanel",
         name: "AdminPanel",
         component: AdminPanel
+    },
+    {
+        path: "/profile",
+        name: "ProfilePage",
+        component: ProfilePage
     }
 ]
 

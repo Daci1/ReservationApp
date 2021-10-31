@@ -12,8 +12,11 @@
                     <div class="menu-content">
                         <h4>{{menuEntry.category}}-{{menuEntry.productName}}
                             <span>${{menuEntry.price}}</span>
+                            <br>
                             <button class="delete-button" v-if="this.loggedUser && this.loggedUser.role.toUpperCase() === 'ADMIN'" @click="deleteEntry(menuEntry)">
                                 Delete
+                            </button><button class="edit-button" v-if="this.loggedUser && this.loggedUser.role.toUpperCase() === 'ADMIN'" @click="activateModal(menuEntry)">
+                                Edit
                             </button>
                         </h4>
                         <p>{{menuEntry.description}}</p>
@@ -48,9 +51,8 @@
     </div>
 </template>
 <script>
-import axios from 'axios';
 import BackButton from '../components/BackButton.vue';
-import {addNewMenuEntry, getAllMenuEntires, deleteMenuEntry} from '../managers/menuEntryManager'
+import {addNewMenuEntry, getAllMenuEntires, deleteMenuEntry, editMenuEntry} from '../managers/menuEntryManager'
 import {getLoggedUser} from "../managers/userManager"
 export default {
     
@@ -66,6 +68,8 @@ export default {
             menuEntries: [],
             loggedUser: {},
             menuEntryToDelete: {},
+            editReservation: false,
+            oldMenuEntry: null,
         }
     },
     components:{
@@ -79,11 +83,21 @@ export default {
         this.loggedUser = getLoggedUser(); 
     },
     methods:{
-        activateModal(){
+        activateModal(menuEntry){
+            this.editReservation = false;
             let modal = document.querySelector("#modal");
             let wrapper = document.querySelector("#wrapper");
             wrapper.classList.toggle("dark-background");
             modal.classList.toggle("closed-modal");
+            if(menuEntry){
+                this.newProduct.productName = menuEntry.productName;
+                this.newProduct.price = menuEntry.price;
+                this.newProduct.description = menuEntry.description;
+                this.newProduct.category = menuEntry.category;
+                this.newProduct.quantity = menuEntry.quantity;
+                this.editReservation = true;
+                this.oldMenuEntry = menuEntry.productName;
+            }
         },
         deactivateModal(e){
             e.preventDefault();
@@ -92,11 +106,18 @@ export default {
             wrapper.classList.toggle("dark-background");
             modal.classList.toggle("closed-modal");
         },
-        confirm(e){
+        async confirm(e){
             e.preventDefault();
-            if(addNewMenuEntry(this.newProduct)){
-                this.$router.go();
+            if(this.editReservation){
+                if(await editMenuEntry(this.newProduct, this.oldMenuEntry)){
+                    this.$router.go();
+                }
+            }else{
+                if(await addNewMenuEntry(this.newProduct)){
+                    this.$router.go();
+                }
             }
+
         },
         async deleteEntry(menuEntry){
             this.menuEntryToDelete = menuEntry;
@@ -296,7 +317,7 @@ input, select, textarea{
     /* bottom:   0;   */
 }
 
-.delete-button{
+.delete-button, .edit-button{
     padding: 8px 8px 8px;
     line-height: 20px;
     text-transform: none;
@@ -309,5 +330,6 @@ input, select, textarea{
 	letter-spacing: 1px;
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
+    margin: 0 10px;
 }
 </style>

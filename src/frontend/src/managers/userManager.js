@@ -118,3 +118,24 @@ export async function deleteUser(userEmail){
     }
     return false;
 }
+
+export async function selfUpdate(user, oldUserEmail){
+    let url = '/api/user/selfEditUser?oldUserEmail=' + oldUserEmail;
+    let response = await axios.post(url, user, {
+        headers: {
+            authorization: getJWT(),
+        }
+    });
+    if(response.status && response.status == 200){
+        if(user.email !== oldUserEmail){
+            console.log(user.email);
+            console.log(oldUserEmail);
+            signUserOut();
+        }else{
+            localStorage.setItem("user", JSON.stringify(user));
+        }
+
+        return true;
+    }
+    return false;
+}
