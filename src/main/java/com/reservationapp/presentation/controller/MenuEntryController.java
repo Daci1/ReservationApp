@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reservationapp.business.service.MenuEntryService;
@@ -61,12 +62,12 @@ public class MenuEntryController {
 		}
 	}
 	@PostMapping("/editMenuEntry")
-	public ResponseEntity<?> editMenuEntry(@RequestHeader String authorization, @RequestBody MenuEntry menuEntry) {
+	public ResponseEntity<?> editMenuEntry(@RequestHeader String authorization, @RequestBody MenuEntry menuEntry, @RequestParam String oldMenuEntryName) {
 		try {
 			Optional<User> user = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
 			if(user.isPresent() && user.get().getRole().equalsIgnoreCase("ADMIN")) {
 				menuEntryService.editMenuEntry(menuEntry.getPrice(), menuEntry.getDescription(),
-						menuEntry.getQuantity(), menuEntry.getProductName(), menuEntry.getCategory());
+						menuEntry.getQuantity(), menuEntry.getProductName(), menuEntry.getCategory(), oldMenuEntryName);
 				return new ResponseEntity<>(HttpStatus.OK);
 			}else {
 				return new ResponseEntity<>("The sender is not an admin!",HttpStatus.FORBIDDEN);

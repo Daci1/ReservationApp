@@ -75,13 +75,31 @@ public class UserController {
 		}	
 	}
 	
+	@RequestMapping("/selfEditUser")
+	public ResponseEntity<?> selfEditUser(@RequestHeader String authorization, @RequestBody User user, @RequestParam String oldUserEmail){
+		try {
+			System.out.println(oldUserEmail);
+			Optional<User> searchUser = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
+			if(searchUser.isPresent()) {
+				user.setRole(searchUser.get().getRole());
+				userService.updateUser(user, oldUserEmail);
+				return new ResponseEntity<>(HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>("The sender is not an admin!",HttpStatus.FORBIDDEN);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
+	}
+	
 	@RequestMapping("/deleteUser")
 	public ResponseEntity<?> deleteUser(@RequestHeader String authorization, @RequestBody String userEmail){
 		try {
 			Optional<User> admin = userService.findByEmail(jwtTokenUtil.extractUsername(authorization));
 			if(admin.isPresent() && admin.get().getRole().equalsIgnoreCase("ADMIN")) {
 				userEmail = userEmail.replace("%40", "@");
-				userEmail = userEmail.replace("=", "");
+				userEmail = userEmail	.replace("=", "");
 				userService.deleteUser(userEmail);
 				return new ResponseEntity<>(HttpStatus.OK);
 			}else {

@@ -54,8 +54,8 @@ public class MenuEntryServiceImpl implements MenuEntryService {
 	}
 
 	@Override
-	public void editMenuEntry(Double price, String description, Double cantity, String productName, String category) throws MenuEntryNotFoundException {
-		Optional<MenuEntry> editedMenuEntry = menuEntryRepo.findByProductName(productName);
+	public void editMenuEntry(Double price, String description, Double cantity, String productName, String category, String oldMenuEntryName) throws MenuEntryNotFoundException {
+		Optional<MenuEntry> editedMenuEntry = menuEntryRepo.findByProductName(oldMenuEntryName);
 		if(editedMenuEntry.isPresent()) {
 			MenuEntry menuEntryAfterEdit = editedMenuEntry.get();
 			menuEntryAfterEdit.setPrice(price);
@@ -63,6 +63,7 @@ public class MenuEntryServiceImpl implements MenuEntryService {
 			menuEntryAfterEdit.setQuantity(cantity);
 			menuEntryAfterEdit.setProductName(productName);
 			menuEntryAfterEdit.setCategory(category);
+			menuEntryRepo.save(menuEntryAfterEdit);
 		}else {
 			throw new MenuEntryNotFoundException(productName);
 		}

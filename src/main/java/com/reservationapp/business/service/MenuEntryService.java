@@ -21,7 +21,7 @@ public interface MenuEntryService {
 	public Optional<MenuEntry> getMenuEntryByProductName(String productName);
 	
 	public void editMenuEntry(Double price, String description, Double cantity, String productName,
-			String category) throws MenuEntryNotFoundException;
+			String category, String oldMenuEntryName) throws MenuEntryNotFoundException;
 
 	public void deleteMenuEntry(MenuEntry menuEntry);
 }

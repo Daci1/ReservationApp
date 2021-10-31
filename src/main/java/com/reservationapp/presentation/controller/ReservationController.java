@@ -56,7 +56,6 @@ public class ReservationController {
 				if(reservationBegin.getHours() == 0) {
 					reservationBegin.setHours(12);
 				}
-				System.out.println(reservationBegin);
 				tableNumber = Json.get("tableNumber");
 			}else {
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -124,7 +123,9 @@ public class ReservationController {
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				Date parsedDate = dateFormat.parse(Json.get("reservationBegin"));
 				Timestamp reservationBegin = new Timestamp(parsedDate.getTime());
-				
+				if(reservationBegin.getHours() == 0) {
+					reservationBegin.setHours(12);
+				}
 				String tableNumber = Json.get("tableNumber");
 				
 				Reservation reservation = new Reservation(tableNumber, reservationBegin);

@@ -29,30 +29,30 @@
                             <label for="email">Email</label>
                             <input required type="text" id="email" name="email" :placeholder="selectedUserToEdit.email" v-model="selectedUserToEdit.email">
 
-                            <label for="price">Product price</label>
-                            <input required type="text" id="price" name="price" placeholder="Product price.." v-model="selectedUserToEdit.firstName">
+                            <label for="firstName">First Name</label>
+                            <input required type="text" id="firstName" name="firstName" placeholder="User First Name.." v-model="selectedUserToEdit.firstName">
 
-                            <label for="quantity">Product quantity</label>
-                            <input required type="text" id="quantity" name="quantity" placeholder="Product quantity.." v-model="selectedUserToEdit.lastName">
+                            <label for="lastName">Last Name</label>
+                            <input required type="text" id="lastName" name="lastName" placeholder="User Last Name.." v-model="selectedUserToEdit.lastName">
 
-                            <label for="category">Product category</label>
-                            <input required type="text" id="category" name="category" placeholder="Product category.." v-model="selectedUserToEdit.mobileNo">
+                            <label for="mobileNo">Mobile Number</label>
+                            <input required type="text" id="mobileNo" name="mobileNo" placeholder="User Mobile Number.." v-model="selectedUserToEdit.mobileNo">
 
-                            <label for="category">Product category</label>
-                            <input required type="text" id="category" name="category" placeholder="Product category.." v-model="selectedUserToEdit.role">
+                            <label for="role">Role</label>
+                            <input required type="text" id="role" name="role" placeholder="User Role.." v-model="selectedUserToEdit.role">
 
-                            <label for="category">Product category</label>
-                            <input required type="date" id="category" name="category" placeholder="Product category.." v-model="selectedUserToEdit.dob">
+                            <label for="dob">Date of Birth</label>
+                            <input required type="date" id="dob" name="dob" placeholder="User Date of Birth.." v-model="selectedUserToEdit.dob">
 
                         <button class="confirm-button">Confirm</button>
                         <button class="close-button" @click="deactivateModal">Close</button>
                         </form>
-        </div>
+                </div>
     </div>
 </template>
 <script>
 import NavBar from "../components/NavBar.vue"
-import {getAllUsers, updateUser, deleteUser,} from "../managers/userManager"
+import {getAllUsers, updateUser, deleteUser, getLoggedUser, signUserOut} from "../managers/userManager"
 import {getAllReservations, deleteReservation} from "../managers/reservationManager"
 export default {
     components: {
@@ -89,12 +89,22 @@ export default {
             },
             oldUserEmail: null,
             rowToDelete: null,
+            loggedUser: null,
         }
     },
     setup() {
         
     },
     async created() {
+        this.loggedUser = await getLoggedUser();
+        if(this.loggedUser.role.toUpperCase() !== "ADMIN"){
+            let refreshUser = JSON.parse(localStorage.getItem("user"));
+            refreshUser.role = "user";
+            localStorage.setItem("user", JSON.stringify(refreshUser));
+            signUserOut();
+            this.$router.push("/");
+        }
+
         this.currentTableRows = await getAllUsers();
         this.sort(this.currentSort);
         this.currentTH = this.userTH;
@@ -175,11 +185,23 @@ export default {
             wrapper.classList.toggle("dark-background");
             modal.classList.toggle("closed-modal");
         },
-        confirm(e){
+        async confirm(e){
             e.preventDefault();
             console.log(this.selectedUserToEdit);
-            if(updateUser(this.selectedUserToEdit, this.oldUserEmail)){
-                this.$router.go();
+            if(await updateUser(this.selectedUserToEdit, this.oldUserEmail)){
+                if(this.loggedUser.email === this.oldUserEmail && this.oldUserEmail !== this.selectedUserToEdit.email){
+                    console.log(this.loggedUser.email, this.oldUserEmail, this.selectedUserToEdit.email);
+                    this.$router.push("/");
+                }else{
+                    if(this.loggedUser.email === this.oldUserEmail && this.selectedUserToEdit.email === this.oldUserEmail){
+                        this.loggedUser = await getLoggedUser();
+                    }
+                    if(this.loggedUser.role.toUpperCase() === "ADMIN"){
+                        this.currentTableRows = await getAllUsers();
+                    }
+                    
+                    this.$router.go();
+                }
             }
         }
     }

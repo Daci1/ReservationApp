@@ -48,7 +48,8 @@ export function getJWT(){
 }
 
 export function getLoggedUser(){
-    return JSON.parse(localStorage.getItem("user"));
+    loggedUser = JSON.parse(localStorage.getItem("user"));
+    return loggedUser;
 }
 
 export function signUserOut(){
@@ -101,6 +102,13 @@ export async function updateUser(user, oldUserEmail){
         }
     });
     if(response.status && response.status == 200){
+        if(loggedUser.email === oldUserEmail && user.email !== oldUserEmail){
+            signUserOut();
+        }else{
+            if(loggedUser.email === oldUserEmail && user.email === oldUserEmail){
+                localStorage.setItem("user", JSON.stringify(user));
+            }
+        }
         return true;
     }
     return false;
@@ -114,6 +122,27 @@ export async function deleteUser(userEmail){
         }
     });
     if(response.status && response.status == 200){
+        return true;
+    }
+    return false;
+}
+
+export async function selfUpdate(user, oldUserEmail){
+    let url = '/api/user/selfEditUser?oldUserEmail=' + oldUserEmail;
+    let response = await axios.post(url, user, {
+        headers: {
+            authorization: getJWT(),
+        }
+    });
+    if(response.status && response.status == 200){
+        if(user.email !== oldUserEmail){
+            console.log(user.email);
+            console.log(oldUserEmail);
+            signUserOut();
+        }else{
+            localStorage.setItem("user", JSON.stringify(user));
+        }
+
         return true;
     }
     return false;
