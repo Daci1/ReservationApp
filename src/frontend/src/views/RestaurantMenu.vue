@@ -79,22 +79,14 @@ export default {
         this.loggedUser = getLoggedUser(); 
     },
     methods:{
-        onFileSelected(event){
-            this.selectedFile = event.target.files[0];
-        },
-        async onUpload(){
-            const url = '/api/menu/getall';
-            let response = await axios.get(url); 
-            document.getElementById("ItemPreview").src = response.data[0].image;
-            console.log(document.getElementById("ItemPreview").src);
-        },
-        async activateModal(){
+        activateModal(){
             let modal = document.querySelector("#modal");
             let wrapper = document.querySelector("#wrapper");
             wrapper.classList.toggle("dark-background");
             modal.classList.toggle("closed-modal");
         },
-        deactivateModal(){
+        deactivateModal(e){
+            e.preventDefault();
             let modal = document.querySelector("#modal");
             let wrapper = document.querySelector("#wrapper");
             wrapper.classList.toggle("dark-background");

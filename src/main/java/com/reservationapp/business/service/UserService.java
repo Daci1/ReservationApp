@@ -18,5 +18,6 @@ public interface UserService {
 	public Optional<User> findByEmail(String email);
 	public void validateRequestSender(User user, String jwt) throws CorruptedRequestException;
 	public Set<Reservation> getUserReservation(String email) throws UserNotFoundException;
+	public void updateUser(User updatedUser, String oldUserEmail);
 	
 }

@@ -92,3 +92,16 @@ export async function getAllUsers(){
 
     return users;
 }
+
+export async function updateUser(user, oldUserEmail){
+    let url = '/api/user/editUser?oldUserEmail=' + oldUserEmail;
+    let response = await axios.post(url, user, {
+        headers: {
+            authorization: getJWT(),
+        }
+    });
+    if(response.status && response.status == 200){
+        return true;
+    }
+    return false;
+}

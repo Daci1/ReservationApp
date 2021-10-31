@@ -70,6 +70,24 @@ public class UserServiceImpl implements UserService{
 		}
 		
 		return searchedUser.get().getUserReservation();
+	}
+
+	@Override
+	public void updateUser(User updatedUser, String oldUserEmail) {
+		Optional<User> user = userRepo.findByEmail(oldUserEmail);
+		System.out.println(updatedUser);
+		if(user.isPresent()) {
+			User userObj = user.get();
+			userObj.setDob(updatedUser.getDob());
+			userObj.setEmail(updatedUser.getEmail());
+			userObj.setFirstName(updatedUser.getFirstName());
+			userObj.setLastName(updatedUser.getLastName());
+			userObj.setMobileNo(updatedUser.getMobileNo());
+			userObj.setRole(updatedUser.getRole());
+			System.out.println(userObj);
+			userRepo.save(userObj);
+			System.out.println(userObj);
+		}
 	}	
 	
 }
