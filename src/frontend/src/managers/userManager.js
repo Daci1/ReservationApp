@@ -48,7 +48,8 @@ export function getJWT(){
 }
 
 export function getLoggedUser(){
-    return JSON.parse(localStorage.getItem("user"));
+    loggedUser = JSON.parse(localStorage.getItem("user"));
+    return loggedUser;
 }
 
 export function signUserOut(){
@@ -101,6 +102,13 @@ export async function updateUser(user, oldUserEmail){
         }
     });
     if(response.status && response.status == 200){
+        if(loggedUser.email === oldUserEmail && user.email !== oldUserEmail){
+            signUserOut();
+        }else{
+            if(loggedUser.email === oldUserEmail && user.email === oldUserEmail){
+                localStorage.setItem("user", JSON.stringify(user));
+            }
+        }
         return true;
     }
     return false;

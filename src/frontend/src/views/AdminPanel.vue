@@ -52,7 +52,7 @@
 </template>
 <script>
 import NavBar from "../components/NavBar.vue"
-import {getAllUsers, updateUser, deleteUser,} from "../managers/userManager"
+import {getAllUsers, updateUser, deleteUser, getLoggedUser, signUserOut} from "../managers/userManager"
 import {getAllReservations, deleteReservation} from "../managers/reservationManager"
 export default {
     components: {
@@ -89,12 +89,22 @@ export default {
             },
             oldUserEmail: null,
             rowToDelete: null,
+            loggedUser: null,
         }
     },
     setup() {
         
     },
     async created() {
+        this.loggedUser = await getLoggedUser();
+        if(this.loggedUser.role.toUpperCase() !== "ADMIN"){
+            let refreshUser = JSON.parse(localStorage.getItem("user"));
+            refreshUser.role = "user";
+            localStorage.setItem("user", JSON.stringify(refreshUser));
+            signUserOut();
+            this.$router.push("/");
+        }
+
         this.currentTableRows = await getAllUsers();
         this.sort(this.currentSort);
         this.currentTH = this.userTH;
@@ -179,8 +189,19 @@ export default {
             e.preventDefault();
             console.log(this.selectedUserToEdit);
             if(await updateUser(this.selectedUserToEdit, this.oldUserEmail)){
-                this.currentTableRows = await getAllUsers();
-                this.$router.go();
+                if(this.loggedUser.email === this.oldUserEmail && this.oldUserEmail !== this.selectedUserToEdit.email){
+                    console.log(this.loggedUser.email, this.oldUserEmail, this.selectedUserToEdit.email);
+                    this.$router.push("/");
+                }else{
+                    if(this.loggedUser.email === this.oldUserEmail && this.selectedUserToEdit.email === this.oldUserEmail){
+                        this.loggedUser = await getLoggedUser();
+                    }
+                    if(this.loggedUser.role.toUpperCase() === "ADMIN"){
+                        this.currentTableRows = await getAllUsers();
+                    }
+                    
+                    this.$router.go();
+                }
             }
         }
     }
