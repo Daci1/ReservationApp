@@ -10,7 +10,7 @@
 			<input required="required" type="text" placeholder="Last Name" v-model="registerUser.lastName"/>
             <input required="required" type="date" v-model="registerUser.dob"/>
 			<input required="required" type="email" placeholder="Email" v-model="registerUser.email"/>
-			<input required="required" type="tel" placeholder="Mobile" v-model="registerUser.mobileNo"/>
+			<input required="required" type="number" placeholder="Mobile" v-model="registerUser.mobileNo"/>
 			<input required="required" type="password" placeholder="Password" v-model="registerUser.password"/>
 			<span>{{invalidRegisterCredentials}}</span>
 			<button>Sign Up</button>
@@ -365,5 +365,16 @@ input {
 	margin: 0 5px;
 	height: 40px;
 	width: 40px;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 </style>
