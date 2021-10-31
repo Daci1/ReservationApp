@@ -97,7 +97,9 @@ export default {
             this.interval = interval;
         },
         confirm(){
-            addUserReservation(this.tableToReserve, this.dateToReserve, this.interval);
+            if(this.tableToReserve != null && this.dateToReserve != null && this.interval != null){
+                addUserReservation(this.tableToReserve, this.dateToReserve, this.interval);
+            }
             this.deactivateModal();
         }
     }

@@ -12,7 +12,7 @@ public interface MenuEntryService {
 	public Set<MenuEntry> getAll();
 
 	public void createNewMenuEntry(Double price, String description, Double cantity, String productName,
-			String category, String image) throws MenuEntryAlreadyExistsException;
+			String category) throws MenuEntryAlreadyExistsException;
 
 	public void save(MenuEntry menuEntry);
 
@@ -21,5 +21,5 @@ public interface MenuEntryService {
 	public Optional<MenuEntry> getMenuEntryByProductName(String productName);
 	
 	public void editMenuEntry(Double price, String description, Double cantity, String productName,
-			String category, String image) throws MenuEntryNotFoundException;
+			String category) throws MenuEntryNotFoundException;
 }

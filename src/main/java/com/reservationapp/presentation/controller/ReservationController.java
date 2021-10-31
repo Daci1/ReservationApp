@@ -99,7 +99,6 @@ public class ReservationController {
 	public ResponseEntity<?> getUserReservations(@RequestBody String email){
 		email = email.replace("%40", "@");
 		email = email.replace("=", "");
-		System.out.println(email);
 		try {
 			Set<Reservation> userReservations = userService.getUserReservation(email.trim());
 			return new ResponseEntity<>(userReservations, HttpStatus.OK);
@@ -131,6 +130,7 @@ public class ReservationController {
 				return new ResponseEntity<>("Invalid.",HttpStatus.FORBIDDEN);
 			}
 		}catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
 	}
@@ -145,6 +145,7 @@ public class ReservationController {
 				return new ResponseEntity<>("Invalid.",HttpStatus.FORBIDDEN);
 			}
 		}catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

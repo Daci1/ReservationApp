@@ -89,7 +89,7 @@ export default {
 			e.preventDefault();
 			try{
 				await registerUser(this.registerUser);
-				// this.$router.go();
+				this.$router.go();
 			}catch(err){
 				//add invalid credentials
 				if(String(err).includes("302")){

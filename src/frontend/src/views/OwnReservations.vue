@@ -39,7 +39,7 @@ export default {
         return {
             userReservations: [],
             currentSort: 'reservationBegin',
-            currentSortDir: 'desc',
+            currentSortDir: 'asc',
             pageSize: 8,
             currentPage: 1
         }

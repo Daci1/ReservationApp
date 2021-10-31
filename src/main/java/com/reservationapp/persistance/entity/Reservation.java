@@ -1,12 +1,13 @@
 package com.reservationapp.persistance.entity;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
@@ -25,6 +26,9 @@ public class Reservation {
 	public Reservation() {
 		
 	}
+	
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 	
 	public Reservation(final String tableName, final Timestamp reservationBegin) {
 		this.tableName = tableName;
@@ -67,6 +71,16 @@ public class Reservation {
 	@Override
 	public String toString() {
 		return "Reservation [id=" + id + ", tableName=" + tableName + ", reservationBegin=" + reservationBegin + "]";
+	}
+	
+	@JsonIgnore
+	public User getUser() {
+		return this.user;
+	}
+	
+	@JsonIgnore
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }

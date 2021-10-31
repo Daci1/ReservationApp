@@ -53,11 +53,10 @@ public class ReservationServiceImpl implements ReservationService{
 			throw new InvalidReservationTimeException();
 		}
 		Reservation newReservation = new Reservation(tableName, reservationBegin);
-		System.out.println(newReservation.getReservationBegin());
+		newReservation.setUser(user);
 		reservationRepo.save(newReservation);
 		user.addReservation(newReservation);
-		userRepo.save(user);		
-		System.out.println(newReservation);
+		userRepo.save(user);
 	}
 
 	@Override
@@ -72,17 +71,16 @@ public class ReservationServiceImpl implements ReservationService{
 
 	@Override
 	public void deleteReservation(User user, Reservation reservation) {
-		Set<Reservation> userReservations = user.getUserReservation();
-		Iterator<Reservation> iterator = userReservations.iterator();
-		Reservation r;
-		while(iterator.hasNext()) {
-			r = iterator.next();
-			if(r.getTableNumber().equals(reservation.getTableNumber()) && r.getReservationBegin().toString().equals(reservation.getReservationBegin().toString())) {
-				System.out.println(userReservations.remove(r));
-				userRepo.save(user);
-				reservationRepo.delete(r);
-				break;
-			}
+		Optional<Reservation> searchedReservation = reservationRepo.findByTableNameAndReservationBegin(reservation.getTableNumber(), reservation.getReservationBegin());
+		if(searchedReservation.isEmpty()) {
+			return;
+		}
+		Reservation deleteReservation = searchedReservation.get();
+		Set<Reservation> userReservations = deleteReservation.getUser().getUserReservation();
+		if(userReservations.contains(deleteReservation) && (deleteReservation.getUser().equals(user) || user.getRole().equalsIgnoreCase("Admin"))){
+			userReservations.remove(deleteReservation);
+			reservationRepo.delete(deleteReservation);
+			userRepo.save(deleteReservation.getUser());
 		}
 	}
 }

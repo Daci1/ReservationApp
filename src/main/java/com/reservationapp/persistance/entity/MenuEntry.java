@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
@@ -21,27 +20,24 @@ public class MenuEntry {
 	@NotNull
 	private String description;
 	@NotNull
-	private Double cantity;
+	private Double quantity;
 	@NotNull
 	@Column(unique = true)
 	private String productName;
 	@NotNull
 	private String category;
-	@Lob
-	private String image;
 
 	public MenuEntry() {
 	}
 
 	public MenuEntry(final Double price, final String description, final Double cantity, final String productName,
-			final String category, String image) {
+			final String category) {
 		super();
 		this.price = price;
 		this.description = description;
-		this.cantity = cantity;
+		this.quantity = cantity;
 		this.productName = productName;
 		this.category = category;
-		this.image = image;
 	}
 
 	public String getCategory() {
@@ -73,12 +69,12 @@ public class MenuEntry {
 		this.description = description;
 	}
 
-	public Double getCantity() {
-		return cantity;
+	public Double getQuantity() {
+		return quantity;
 	}
 
-	public void setCantity(final Double cantity) {
-		this.cantity = cantity;
+	public void setQuantity(final Double quantity) {
+		this.quantity = quantity;
 	}
 
 	public String getProductName() {
@@ -88,18 +84,10 @@ public class MenuEntry {
 	public void setProductName(final String productName) {
 		this.productName = productName;
 	}
-	
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
 
 	@Override
 	public String toString() {
-		return "MenuEntry [price=" + price + ", description=" + description + ", cantity=" + cantity + ", productName="
+		return "MenuEntry [price=" + price + ", description=" + description + ", cantity=" + quantity + ", productName="
 				+ productName + ", category=" + category + "]";
 	}
 }

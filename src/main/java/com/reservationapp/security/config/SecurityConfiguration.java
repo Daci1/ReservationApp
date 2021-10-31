@@ -1,6 +1,5 @@
 package com.reservationapp.security.config;
 
-import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -48,7 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 					"/api/user/getall",
 					"/api/reservation/getall").permitAll()
 			.antMatchers("/api/user/*").authenticated()
-			.antMatchers("/api/menu/getall").permitAll()
+			.antMatchers("/api/menu/getall", "/api/menu/newMenuEntry", "/api/menu/editMenuEntry").permitAll()
 			.antMatchers("/api/menu/*").authenticated()
 			.and().sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);

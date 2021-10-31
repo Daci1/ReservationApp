@@ -51,6 +51,7 @@ public class UserController {
 				return new ResponseEntity<>("The sender is not an admin!",HttpStatus.FORBIDDEN);
 			}
 		}catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
 	}
@@ -64,6 +65,7 @@ public class UserController {
 				return new ResponseEntity<>(HttpStatus.FOUND);
 			}else {
 				user.setPassword(passwordEncoder.encode(user.getPassword()));
+				user.setRole("user");
 				userService.save(user);
 				
 				return new ResponseEntity<>(HttpStatus.OK);

@@ -111,10 +111,10 @@ export async function deleteReservation(reservation){
             authorization: getJWT()
         }
     });
+    console.log(reservation);
     if(response.status && response.status == 200){
         return true;
     }
-
     return false;
 }
 

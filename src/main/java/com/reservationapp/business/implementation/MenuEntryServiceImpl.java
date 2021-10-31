@@ -38,12 +38,12 @@ public class MenuEntryServiceImpl implements MenuEntryService {
 
 	@Override
 	public void createNewMenuEntry(Double price, String description, Double cantity, String productName,
-			String category, String image) throws MenuEntryAlreadyExistsException {
+			String category) throws MenuEntryAlreadyExistsException {
 		Optional<MenuEntry> alreadyExistingMenuEntry = menuEntryRepo.findByProductName(productName);
 		if (alreadyExistingMenuEntry.isPresent()) {
 			throw new MenuEntryAlreadyExistsException(alreadyExistingMenuEntry.get());
 		} else {
-			MenuEntry newMenuEntry = new MenuEntry(price, description, cantity, productName, category, image);
+			MenuEntry newMenuEntry = new MenuEntry(price, description, cantity, productName, category);
 			menuEntryRepo.save(newMenuEntry);
 		}
 	}
@@ -54,17 +54,15 @@ public class MenuEntryServiceImpl implements MenuEntryService {
 	}
 
 	@Override
-	public void editMenuEntry(Double price, String description, Double cantity, String productName, String category,
-			String image) throws MenuEntryNotFoundException {
+	public void editMenuEntry(Double price, String description, Double cantity, String productName, String category) throws MenuEntryNotFoundException {
 		Optional<MenuEntry> editedMenuEntry = menuEntryRepo.findByProductName(productName);
 		if(editedMenuEntry.isPresent()) {
 			MenuEntry menuEntryAfterEdit = editedMenuEntry.get();
 			menuEntryAfterEdit.setPrice(price);
 			menuEntryAfterEdit.setDescription(description);
-			menuEntryAfterEdit.setCantity(cantity);
+			menuEntryAfterEdit.setQuantity(cantity);
 			menuEntryAfterEdit.setProductName(productName);
 			menuEntryAfterEdit.setCategory(category);
-			menuEntryAfterEdit.setImage(image);
 		}else {
 			throw new MenuEntryNotFoundException(productName);
 		}

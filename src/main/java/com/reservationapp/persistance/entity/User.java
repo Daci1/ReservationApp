@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -45,7 +46,7 @@ public class User implements UserDetails{
 	@NotNull
 	private String role;
 	private Timestamp dob;
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Reservation> reservations = new HashSet<>();
 	@NotNull
 	private String mobileNo;
@@ -173,6 +174,21 @@ public class User implements UserDetails{
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		return Objects.equals(dob, other.dob) && Objects.equals(email, other.email)
+				&& Objects.equals(firstName, other.firstName) && Objects.equals(lastName, other.lastName)
+				&& Objects.equals(mobileNo, other.mobileNo) && Objects.equals(password, other.password)
+				&& Objects.equals(role, other.role);
 	}
 
 }

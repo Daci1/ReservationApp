@@ -15,11 +15,10 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- <tr v-for="reservation in currentTableRows" :key="reservation.reservationBegin"> -->
                 <tr v-for="row in sortedRows" :key="row">
                     <td v-for="tdEntry in row" :key="tdEntry" >{{tdEntry}}</td>
-                    <td><button class="delete-button" @click="deleteR(reservation)">Delete</button></td>
-                    <td v-if="this.currentTable === 'users'"><button class="delete-button" @click="deleteR(reservation)">Edit</button></td>
+                    <td><button class="delete-button" @click="deleteRow(row)">Delete</button></td>
+                    <td v-if="this.currentTable === 'users'"><button class="delete-button" @click="console.log()">Edit</button></td>
                 </tr>
             </tbody>
             </table>
@@ -29,7 +28,7 @@
 <script>
 import NavBar from "../components/NavBar.vue"
 import {getAllUsers,} from "../managers/userManager"
-import {getAllReservations} from "../managers/reservationManager"
+import {getAllReservations, deleteReservation} from "../managers/reservationManager"
 export default {
     components: {
         NavBar
@@ -105,6 +104,16 @@ export default {
             this.currentTableRows = this.currentTable === "users" ? await getAllUsers() : await getAllReservations();
             this.sort(this.currentSort);
             console.log(this.currentTableRows);
+        },
+        async deleteRow(row){
+            if(this.currentTH === "users"){
+                console.log();
+            }else{
+                if(deleteReservation(row)){
+                    this.$router.go();
+                    // this.swapTable();
+                }
+            }
         }
     }
 }
